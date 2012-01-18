@@ -70,3 +70,17 @@ function Glove(element, E, F, I, W){
     this.kind  = 'm'
     this.count = 3
 };
+
+function Tile(contents, E, F, I, W){
+    Stone.call(this, E, F, I, W);
+    this.contents = contents;
+}
+
+function Grid(E, F, I, W, x, y, tiles){
+    Stone.call(this, E, F, I, W);
+    this.x = x;
+    this.y = y;
+    this.size = [this.x, this.y];
+    this.tiles = tiles
+}
+
