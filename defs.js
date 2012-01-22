@@ -6,15 +6,15 @@ var W = "Wind"
 var ELEMENTS = [E, F, I, W]
 
 //var Stone = var Stone = {E: 0, F:0, I:0, W:0}
-function Stone(E, F, I, W){
-    this.E = E;
-    this.F = F;
-    this.I = I;
-    this.W = W;
+function Stone(comp){
+    this.E = comp[0];
+    this.F = comp[1];
+    this.I = comp[2];
+    this.W = comp[3];
 }
 
-function Unit(element, E, F, I, W, name, loc){
-    Stone.call(this, E, F, I, W);
+function Unit(element, comp, name, loc){
+    Stone.call(this, comp);
     this.element = element;
     this.name = name;
     this.loc = loc;
@@ -34,8 +34,8 @@ function Unit(element, E, F, I, W, name, loc){
     };
 };
 
-function Scient(element, E, F, I, W, name, loc, weapon, weapon_bonus){
-    Unit.call(this, element, E, F, I, W, name, loc);
+function Scient(element, comp, name, loc, weapon, weapon_bonus){
+    Unit.call(this, element, comp, name, loc);
     this.move         = 4;
     this.weapon       = weapon;
     this.weapon_bonus = weapon_bonus;
@@ -44,40 +44,40 @@ function Scient(element, E, F, I, W, name, loc, weapon, weapon_bonus){
     this.calcstats()
 };
 
-function Weapon(element, E, F, I, W, wep_type){
-    Stone.call(this, E, F, I, W);
+function Weapon(element, comp, wep_type){
+    Stone.call(this, comp);
     this.element  = element
     this.wep_type = wep_type
 };
 
-function Sword(element, E, F, I, W){
-    Weapon.call(this, element, E, F, I, W, 'Sword')
+function Sword(element, comp){
+    Weapon.call(this, element, comp, 'Sword')
     this.kind = 'p'
 };
 
-function Bow(element, E, F, I, W){
-    Weapon.call(this, element, E, F, I, W, 'Bow')
+function Bow(element, comp){
+    Weapon.call(this, element, comp, 'Bow')
     this.kind = 'p'
 };
 
-function Wand(element, E, F, I, W){
-    Weapon.call(this, element, E, F, I, W, 'Wand')
+function Wand(element, comp){
+    Weapon.call(this, element, comp, 'Wand')
     this.kind = 'm'
 };
 
-function Glove(element, E, F, I, W){
-    Weapon.call(this, element, E, F, I, W, 'Glove')
+function Glove(element, comp){
+    Weapon.call(this, element, comp, 'Glove')
     this.kind  = 'm'
     this.count = 3
 };
 
-function Tile(contents, E, F, I, W){
-    Stone.call(this, E, F, I, W);
+function Tile(contents, comp){
+    Stone.call(this, comp);
     this.contents = contents;
 }
 
-function Grid(E, F, I, W, x, y, tiles){
-    Stone.call(this, E, F, I, W);
+function Grid(comp, x, y, tiles){
+    Stone.call(this, comp);
     this.x = x;
     this.y = y;
     this.size = [this.x, this.y];
