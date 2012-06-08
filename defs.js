@@ -1,7 +1,7 @@
-var E = "Earth"
-var F = "Fire"
-var I = "Ice"
-var W = "Wind"
+var E = "Earth";
+var F = "Fire";
+var I = "Ice";
+var W = "Wind";
 
 var ELEMENTS = [E, F, I, W]
 
