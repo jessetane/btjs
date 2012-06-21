@@ -9,7 +9,7 @@
 	<script type="text/javascript" src="res/js/ui.js"></script>
 	<script type="text/javascript" src="res/js/sylvester.src.js"></script>
     <script type="text/javascript" src="res/js/defs.js"></script>
-    <script type="text/javascript" src="res/js/cyclone.js"></script>
+    <script type="text/javascript" src="res/js/services.js"></script>
 	
 	
 	<link href="res/fonts/sansation.css" rel="stylesheet" type="text/css" />
@@ -117,10 +117,10 @@
     			<div class="modal" id="modalLogin">
 					<div class="modalHeader">Log in to Binary Tactics</div><br />
 	        		<strong>Username</strong><br />
-	        		<input id="username" type="text" style="width: 100%"/><br /><br />
+	        		<input id="username" type="text" style="width: 100%" value="atkr"/><br /><br />
 	        		<strong>Password</strong><br />
-	        		<input id="password" type="password" style="width: 100%" /><br /><br />
-	        		<div style="width: 100%;" align="right"><button onclick="login()">Log in</button></div>
+	        		<input id="password" type="password" style="width: 100%" value="atkr" /><br /><br />
+	        		<div style="width: 100%;" align="right"><button onclick="authenticate()">Log in</button></div>
 	        	</div>
         	</div>
         </div>
