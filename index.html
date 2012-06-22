@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
-    <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js"></script>
-    <script src="http://166.84.136.68:8888/battle/static/underscore/underscore.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js"> </script>
+    <script src="http://166.84.136.68:8888/battle/static/underscore/underscore.js"> </script>
     
-    <script type="text/javascript" src="res/js/btjs.js"></script>
-	<script type="text/javascript" src="res/js/config.js"></script>
-	<script type="text/javascript" src="res/js/field.js"></script>
-	<script type="text/javascript" src="res/js/ui.js"></script>
-	<script type="text/javascript" src="res/js/sylvester.src.js"></script>
-    <script type="text/javascript" src="res/js/defs.js"></script>
-    <script type="text/javascript" src="res/js/services.js"></script>
+    <script type="text/javascript" src="res/js/kinetic-v3.10.0.min.js"> </script>
+    <script type="text/javascript" src="res/js/btjs.js"> </script>
+	<script type="text/javascript" src="res/js/config.js"> </script>
+	<script type="text/javascript" src="res/js/field.js"> </script>
+	<script type="text/javascript" src="res/js/ui.js"> </script>
+    <script type="text/javascript" src="res/js/defs.js"> </script>
+    <script type="text/javascript" src="res/js/services.js"> </script>
+    
 	
 	
 	<link href="res/fonts/sansation.css" rel="stylesheet" type="text/css" />
@@ -58,11 +59,9 @@
             return this.querySelectorAll(selector);  
         };
         
-        var field;
         function init(){
-        	field = new Field($("#field"), $("#ui"), $("#input"));
+        	Field.init();
         	resizeCanvas();
-        	//field.draw();
         }
         
         function resizeCanvas(){
@@ -87,32 +86,60 @@
         	$("#ui").style.width = newWidth;
         	$("#ui").style.height = newHeight;
 		
-        	$("#field").width = newWidth;
-        	$("#field").height = newHeight;
-        	
-        	$("#field").style.width = newWidth;
-        	$("#field").style.height = newHeight;
         	
         	$(".shell").style.width = newWidth;
         	$(".shell").style.height = newHeight;
         	
-        	field.center = $V([newWidth / 2, newHeight / 2]);
-        	
-        	field.draw();
+        	Field.setSize(newWidth, newHeight);
         }
 		window.addEventListener('resize', resizeCanvas, false);
 		window.addEventListener('orientationchange', resizeCanvas, false);
+		
+		
+		var leftMouseIsDown = false;
+		var rightMouseIsDown = false;
+		var startDrag;
+		function onMouseDown(e){
+			if(e.button == 0) leftMouseIsDown = true;
+			if(e.button == 2) rightMouseIsDown = true;
+			startDrag = [e.offsetX, e.offsetY];
+		}
+		function onMouseUp(e){
+			if(e.button == 0) leftMouseIsDown = false;
+			if(e.button == 2) rightMouseIsDown = false;
+		}
+		function onMouseMove(e){
+			if(rightMouseIsDown){			
+				Field.rotation = (startDrag.x - e.offsetX)/150;
+				Field.rotation = (Math.round(Field.rotation * 100) % ((Math.PI * 2) * 100)) / 100;
+				
+				Field.tilt = (startDrag.y - e.offsetY)/150;
+				Field.tilt = (Math.round(Field.tilt * 100) % ((Math.PI * 2) * 100)) / 100;
+				Field.stage.draw();
+			}
+		}
+		
+		window.addEventListener('mousedown', onMouseDown, false);
+		window.addEventListener('mouseup', onMouseUp, false);
+		window.addEventListener('mousemove', onMouseMove, false);
         
-        window.onload= init;
+        window.onload = init;
         
+        var customEvent = { //May not need it
+        	offsetX: 613,
+        	offsetY: 444
+		}        
         //#363636
     </script>
     <body>
         <div class="shell">
-        	<canvas id='field' width="768" height="768" oncontextmenu="return false" style="background-color: #1C1C1C; position: absolute;"></canvas>
-        	<canvas id='stats' width="768" height="768" oncontextmenu="return false" style="position: absolute;"></canvas>
-        	<canvas id='ui' width="768" height="768" oncontextmenu="return false" style="position: absolute;"></canvas>
-        	<canvas id='input' width="768" height="768" oncontextmenu="return false" style="position: absolute;"></canvas>
+        	
+        	<canvas id='stats' width="768" height="768" oncontextmenu="return false" style="position: absolute;"> </canvas>
+        	<canvas id='ui' width="768" height="768" oncontextmenu="return false" style="position: absolute;"> </canvas>
+        	<canvas id='input' width="768" height="768" oncontextmenu="return false" style="position: absolute;"> </canvas>
+        	
+        	<div id='field' width="768" height="768" oncontextmenu="return false" style="background-color: #1C1C1C; position: absolute;"> </div>
+        	
         	<div id="dialog" oncontextmenu="return false" style="position: absolute; margin: 0; width: 100%">
     			<div class="modal" id="modalLogin">
 					<div class="modalHeader">Log in to Binary Tactics</div><br />
