@@ -127,7 +127,6 @@ var UI = {
 				fontFamily: "SansationRegular",
 				align: "center",
 				verticalAlign: "middle"
-<<<<<<< local
 			}),
 			player: new Kinetic.Text({
 				x: 100,
@@ -148,8 +147,6 @@ var UI = {
 				fontFamily: "SansationRegular",
 				align: "center",
 				verticalAlign: "middle"
-=======
->>>>>>> other
 			})
 		}
 	},
@@ -168,11 +165,8 @@ var UI = {
 		});
 		
         UI.timer.layer.add(UI.timer.text.time);
-<<<<<<< local
         UI.timer.layer.add(UI.timer.text.turn);
         UI.timer.layer.add(UI.timer.text.player);
-=======
->>>>>>> other
         UI.stageRight.add(UI.timer.layer);
 		
 		UI.unitLeft.layer.add(UI.unitLeft.shape);
@@ -277,14 +271,11 @@ var UI = {
 		}
 		
 		UI.timer.text.time.setText(time);
-<<<<<<< local
 		
 		UI.timer.text.turn.setText("Turn: " + GameState.whose_turn);
 		
 		UI.timer.text.player.setText("Player: " + GameState.player);
 		
-=======
->>>>>>> other
 		UI.timer.layer.draw();
 	}
 }
@@ -313,37 +304,18 @@ function authenticate() {
 			get_initial = Services.api.initial_state();
 			get_initial.then(function(result) {
 				GameState.init(result);
-<<<<<<< local
 				//Field.update();
-=======
->>>>>>> other
 				
-<<<<<<< local
 				var get_state = Services.api.get_state();
-=======
-				get_state = Services.api.get_state();
->>>>>>> other
 				get_state.then(function(result) {
-<<<<<<< local
 					GameState.update(result[result.length - 1]);
-=======
-					GameState.update(result)
->>>>>>> other
 					Field.update();
 				});
 
 				_intervalUpdateState = setInterval(function() {
-<<<<<<< local
 					var get_state = Services.api.get_state();
-=======
-					get_state = Services.api.get_state();
->>>>>>> other
 					get_state.then(function(result) {
-<<<<<<< local
 						if (GameState.update(result[result.length - 1])) {
-=======
-						if (GameState.update(result)) {
->>>>>>> other
 							Field.update();
 						};
 

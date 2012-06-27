@@ -7,11 +7,8 @@ var GameState = {
 	start_time : undefined,
 	units : undefined,
 	HPs : undefined,
-<<<<<<< local
 	whose_turn: undefined,
 	player: "",
-=======
->>>>>>> other
 
 	init : function(result) {
 		this.grid = result.initial_state.grid.grid;
@@ -19,7 +16,6 @@ var GameState = {
 		this.owners = result.initial_state.owners;
 		this.start_time = result.initial_state.start_time;
 		this.units = result.initial_state.units;
-<<<<<<< local
 		this.player_names = result.initial_state.player_names;
 		
 		this.whose_turn = this.player_names[0];
@@ -30,11 +26,8 @@ var GameState = {
 			this.HPs[key] = 0; 
 		}
 		
-=======
->>>>>>> other
 	},
 	update : function(result) {
-<<<<<<< local
 		if(result.locs){
 			this.clearGridContents();
 			this.HPs = result.HPs;
@@ -53,12 +46,6 @@ var GameState = {
 		}else{
 			return true;	
 		}
-=======
-		this.clearGridContents();
-		this.HPs = result.HPs;
-		return this.updateUnitLocations(result.locs);
-
->>>>>>> other
 	},
 	clearGridContents : function() {
 		for (var x in this.grid.tiles) {
