@@ -1,0 +1,43 @@
+input[type="text"], input[type="password"]{
+	background-color: transparent;	
+	color: #FFF;
+	border-bottom: 1px solid rgba(46,97,154,1);
+	font: 13px/19px 'SansationRegular', Arial, sans-serif;
+}
+
+button {
+  	color: #FFF;
+	background: rgba(80, 80, 80, 0.3);
+	font: 13px/19px 'SansationRegular', Arial, sans-serif;
+  	font-weight: bold;
+	/*border-left: 1px solid #888; 
+	border-right: 1px solid #222; 
+	border-top: 1px solid #888;
+	border-bottom: 1px solid #222;
+	*/
+	border: 2px solid rgba(80, 80, 80, 0.1);
+	padding: 8px 16px 8px 16px;
+}
+
+.modal{
+	background: rgba(20,20,20,0.95); 
+	margin: 0 auto; 
+	width: 440px; 
+	padding: 10px;
+	border: 2px solid rgba(80,80,80,0.3);
+	margin-top: 15%;
+}
+
+.modalHeader {
+	font-size: 16px;
+	font-weight: bold;
+	width: 102.5%;
+	height: 24px;
+	background-color: rgba(80,80,80,0.4);
+	border-bottom: 3px solid rgba(20,20,20,0.1);
+	margin-left: -10px;
+	margin-top: -10px;
+	padding-left: 9px;
+	padding-top: 4px;
+}
+
