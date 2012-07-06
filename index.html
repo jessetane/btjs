@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+    <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js"> </script>
+    <script src="http://166.84.136.68:8888/battle/static/underscore/underscore.js"> </script>
+    
+    <script type="text/javascript" src="res/js/kinetic-v3.10.0.min.js"> </script>
+    <script type="text/javascript" src="res/js/btjs.js"> </script>
+	<script type="text/javascript" src="res/js/config.js"> </script>
+	<script type="text/javascript" src="res/js/field.js"> </script>
+	<script type="text/javascript" src="res/js/ui.js"> </script>
+    <script type="text/javascript" src="res/js/defs.js"> </script>
+    <script type="text/javascript" src="res/js/services.js"> </script>
+    
+	
+	
+	<link href="res/fonts/sansation.css" rel="stylesheet" type="text/css" />
+	<link href="res/css/ui.css" rel="stylesheet" type="text/css" />
+	
+    <style type="text/css">
+		body{
+			 background-color: #1C1C1C; 
+			 margin: 0px;	
+			 color: white;
+			 font: 13px/19px 'SansationRegular', Arial, sans-serif;
+		}
+		
+		input{
+			border: 0px solid black;	
+			outline: none;
+		}
+
+        .shell{
+            margin: 0 auto;
+            /*width: 768px;
+            height: 768px;*/
+        }
+        
+        .field{
+            /*width:768px;
+            height:768px;*/
+            /*transform: rotateX(45deg);
+            -webkit-transform: rotateX(45deg); /* Safari and Chrome */
+           /*-moz-transform: rotateX(45deg); /* Firefox */  
+        }
+        
+    </style>
+    <script type="text/javascript">
+    	function $ (selector, el) {  
+		     if (!el) {el = document;}  
+		     return el.querySelector(selector);  
+		}
+		function $$ (selector, el) {  
+	    	if (!el) {el = document;}  
+	    	return el.querySelectorAll(selector);
+    	}
+        Element.prototype.$ = function (selector) {
+            return this.querySelector(selector);  
+        };
+        Element.prototype.$$ = function (selector) {
+            return this.querySelectorAll(selector);  
+        };
+        
+        var selectedPlayer = undefined; //TODO: Where to put this?
+        
+        function init(){
+        	Field.init();
+        	UI.init();
+        	
+        	Field.onTileClick = function(index){
+        		var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
+        		if(unitId){ //If unit is at location
+        			//Check Owner
+        			if(GameState.owners[unitId] == GameState.player){
+        				UI.setLeftUnit(GameState.units[unitId], unitId);
+        				//Context Menus Will Go Here
+        				//Select player
+        				selectedPlayer = undefined;
+        				if(GameState.grid.tiles[index[0]][index[1]].tile.contents.scient){
+        					selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.scient.name;
+        				}else{
+        					selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.nescient.name;
+        				}
+        			} else {
+        				//UI.setRightUnit(GameState.units[unitId]);
+        				//Context Menus Will Go Here
+        				if(selectedPlayer){
+	        				//TODO: SHOW ACTION CONFIRM
+	        				if(GameState.whose_turn == GameState.player || 1 == 1){
+		        				UI.showConfirm({
+			    					header: "Action", 
+			    					message: "Attack unit?", 
+			    					onconfirm: function(){
+				        				Services.attack({
+				        					unitID: GameState.getUnitIdByName(selectedPlayer),
+					    					targetLocation: [index[0], index[1]] // GameState.getUnitIdByLocation(index[0], index[1]) //
+				        				});
+			        					selectedPlayer = undefined;
+			        					UI.setLeftUnit();
+			        			}});
+		        			}else{
+		        				alert("It's not your turn");	
+	        				};
+        				};
+        			}
+        		}else{
+    				if(selectedPlayer){
+        				if(GameState.whose_turn == GameState.player || 1 == 1){
+		    				UI.showConfirm({
+		    					header: "Action", 
+		    					message: "Move unit?", 
+		    					onconfirm: function(){
+				    				Services.move({
+			        					unitID: GameState.getUnitIdByName(selectedPlayer),
+				    					targetLocation: [index[0], index[1]]
+			        				});
+        							UI.setLeftUnit();
+		        			}});
+			        	}else{
+	        				alert("It's not your turn");	
+			        	}
+    				}
+        		}
+        	}
+        	
+        	Field.onTileOver = function(index){
+        		var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
+        		if(unitId){ //If unit is at location
+        			//Check Owner
+        			if(GameState.owners[unitId] != GameState.player){
+        				UI.setRightUnit(GameState.units[unitId], unitId);
+        				//Context Menus Will Go Here
+        			} else {
+        				UI.setRightUnit();
+        				//UI.setRightUnit(GameState.units[unitId]);
+        				//Context Menus Will Go Here
+        			}
+        		}else{
+    				UI.setRightUnit();
+        		}
+        	}
+        	// Field.onTileOver = function(index, position){
+        		// UI.showTileIndicator(position[0], position[1]);
+        	// }
+        	        	
+        	resizeCanvas();
+        }
+        
+        function resizeCanvas(){
+        	var newWidth = window.innerWidth;
+			var newHeight = window.innerHeight - 5;
+		        	
+        	$(".shell").style.width = newWidth;
+        	$(".shell").style.height = newHeight;
+        	
+        	Field.setSize(newWidth, newHeight);
+        	UI.setSize(200, newHeight);
+        }
+		window.addEventListener('resize', resizeCanvas, false);
+		window.addEventListener('orientationchange', resizeCanvas, false);
+		
+        
+        window.onload = init;
+
+    </script>
+    <body>
+        <div class="shell">
+        	
+        	<div id='field' width="768" height="768" oncontextmenu="return false" style="position: absolute;"> </div>
+        	<div id='ui-left' width='200' height='768' oncontextmenu="return false" style="float:left;"> </div>
+        	<div id='ui-right' width='200' height='768' oncontextmenu="return false" style="float:right;"> </div>
+        	<div id="dialog" oncontextmenu="return false" style="position: absolute; margin: 0; width: 100%">
+    			<div class="modal" id="modalLogin" style="display: block">
+					<div class="modalHeader">Log in to Binary Tactics</div><br />
+	        		<strong>Username</strong><br />
+	        		<input id="username" type="text" style="width: 100%" value="atkr"/><br /><br />
+	        		<strong>Password</strong><br />
+	        		<input id="password" type="password" style="width: 100%" value="atkr" /><br /><br />
+	        		<div style="width: 100%;" align="right"><button onclick="authenticate()">Log in</button></div>
+	        	</div>
+	        	<div class="modal" id="modalConfirm">
+					<div class="modalHeader" id="modalConfirmHeader">Log in to Binary Tactics</div><br />
+	        		<span id="modalConfirmMessage"></span>
+	        		<div style="width: 100%;" align="right"><button id="modalYes" onclick="UI.modalYes();">Yes</button><button id="modalNo" onclick="UI.modalNo();">No</button></div>
+	        	</div>
+        	</div>
+        </div>
+    </body>
+</html>
