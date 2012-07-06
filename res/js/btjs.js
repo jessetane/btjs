@@ -5,6 +5,7 @@ var GameState = {
 	locs : undefined,
 	owners : undefined,
 	start_time : undefined,
+	time_left : undefined,
 	units : undefined,
 	HPs : undefined,
 	whose_action: undefined,
