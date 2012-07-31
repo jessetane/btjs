@@ -27,8 +27,9 @@ var UI = {
 		}),
 		text: {
 			name: new Kinetic.Text({
-				x: 100,
-				y: 52,
+				x: 0,
+				y: 32,
+				width: 200,
 				fontSize: 12,
 				textFill: "white",
 				fontFamily: "Calibri",
@@ -36,8 +37,9 @@ var UI = {
 				verticalAlign: "middle"
 			}),
 			hp: new Kinetic.Text({
-				x: 100,
-				y: 72,
+				x: 0,
+				y: 52,
+				width: 200,
 				fontSize: 12,
 				textFill: "white",
 				fontFamily: "Calibri",
@@ -45,8 +47,9 @@ var UI = {
 				verticalAlign: "middle"
 			}),
 			unitComp: new Kinetic.Text({
-				x: 100,
-				y: 112,
+				x: 0,
+				y: 92,
+				width: 200,
 				fontSize: 12,
 				textFill: "white",
 				fontFamily: "Calibri",
@@ -54,8 +57,9 @@ var UI = {
 				verticalAlign: "middle"
 			}),
 			secondaryComp: new Kinetic.Text({
-				x: 100,
-				y: 152,
+				x: 0,
+				y: 132,
+				width: 200,
 				fontSize: 12,
 				textFill: "white",
 				fontFamily: "Calibri",
@@ -79,8 +83,9 @@ var UI = {
 		}),
 		text: {
 			name: new Kinetic.Text({
-				x: 100,
-				y: 510,
+				x: 0,
+				y: 490,
+				width: 200,
 				fontSize: 12,
 				textFill: "white",
 				fontFamily: "Calibri",
@@ -88,8 +93,9 @@ var UI = {
 				verticalAlign: "middle"
 			}),
 			hp: new Kinetic.Text({
-				x: 100,
-				y: 530,
+				x: 0,
+				y: 510,
+				width: 200,
 				fontSize: 12,
 				textFill: "white",
 				fontFamily: "Calibri",
@@ -97,8 +103,9 @@ var UI = {
 				verticalAlign: "middle"
 			}),
 			unitComp: new Kinetic.Text({
-				x: 100,
-				y: 570,
+				x: 0,
+				y: 550,
+				width: 200,
 				fontSize: 12,
 				textFill: "white",
 				fontFamily: "Calibri",
@@ -106,8 +113,9 @@ var UI = {
 				verticalAlign: "middle"
 			}),
 			secondaryComp: new Kinetic.Text({
-				x: 100,
-				y: 610,
+				x: 0,
+				y: 590,
+				width: 200,
 				fontSize: 12,
 				textFill: "white",
 				fontFamily: "Calibri",
@@ -121,8 +129,31 @@ var UI = {
 		layer: new Kinetic.Layer(),
 		text: {
 			time: new Kinetic.Text({
-				x: 100,
+				x: 0,
 				y: 32,
+				width: 200,
+				text: "00:00",
+				fontSize: 12,
+				textFill: "white",
+				fontFamily: "SansationRegular",
+				align: "center",
+				verticalAlign: "middle"
+			}),
+			timeLeftBattle: new Kinetic.Text({
+				x: 0,
+				y: 62,
+				width: 200,
+				text: "00:00",
+				fontSize: 12,
+				textFill: "white",
+				fontFamily: "SansationRegular",
+				align: "center",
+				verticalAlign: "middle"
+			}),
+			timeLeftPly: new Kinetic.Text({
+				x: 0,
+				y: 92,
+				width: 200,
 				text: "00:00",
 				fontSize: 12,
 				textFill: "white",
@@ -131,8 +162,8 @@ var UI = {
 				verticalAlign: "middle"
 			}),
 			player: new Kinetic.Text({
-				x: 100,
-				y: 62,
+				x: 0,
+				y: 122,
 				text: "Player: ",
 				fontSize: 12,
 				textFill: "white",
@@ -141,8 +172,8 @@ var UI = {
 				verticalAlign: "middle"
 			}),
 			action: new Kinetic.Text({
-			    x: 100,
-			    y: 92,
+			    x: 0,
+			    y: 152,
 			    text: "Whose Action? ",
 			    fontSize: 12,
 			    textFill: "white",
@@ -151,8 +182,8 @@ var UI = {
 			    verticalAlign: "middle"
 			}),
 			actionNo: new Kinetic.Text({
-			    x: 100,
-			    y: 122,
+			    x: 0,
+			    y: 172,
 			    text: "Action #",
 			    fontSize: 12,
 			    textFill: "white",
@@ -161,8 +192,8 @@ var UI = {
 			    verticalAlign: "middle"
 			}),
 			turn: new Kinetic.Text({
-				x: 100,
-				y: 152,
+				x: 0,
+				y: 192,
 				text: "Turn #",
 				fontSize: 12,
 				textFill: "white",
@@ -187,8 +218,9 @@ var UI = {
 		}),
 		text: {
 			label: new Kinetic.Text({
-				x: 100,
-				y: 562,
+				x: 0,
+				y: 542,
+				width: 200,
 			    text: "Pass",
 				fontSize: 12,
 				textFill: "white",
@@ -223,6 +255,8 @@ var UI = {
 		});
 		
         UI.timer.layer.add(UI.timer.text.time);
+        UI.timer.layer.add(UI.timer.text.timeLeftBattle);
+        UI.timer.layer.add(UI.timer.text.timeLeftPly);
         UI.timer.layer.add(UI.timer.text.action);
         UI.timer.layer.add(UI.timer.text.actionNo);
         UI.timer.layer.add(UI.timer.text.turn);
@@ -364,6 +398,59 @@ var UI = {
 		//console.log(unit);
 	},
 	
+	setMoveable: function(x, y, targetUnit){
+		//Clear all moveable tiles
+		for(var i = 0; i < 16; i++){
+            for(var j = 0; j < 16; j++){
+				if(GameState.grid.tiles[i][j].tile.contents == "movable" || GameState.grid.tiles[i][j].tile.contents == "attackable") GameState.grid.tiles[i][j].tile.contents = null;            	
+            }
+		}
+		
+		range = 0;
+		if(targetUnit){
+			targetUnit = GameState.getUnitById(GameState.getUnitIdByName(targetUnit));
+			if(targetUnit.scient) targetUnit = targetUnit.scient;
+			if(targetUnit.nescient) targetUnit = targetUnit.nescient;
+			
+			//TODO use defs.js battlefield object. battleField.range.indexOf(weapon) > -1;
+			if(targetUnit.weapon){
+				//DOT -- ['Glove', 'Firestorm', 'Icestorm',  'Blizzard',   'Pyrocumulus']
+				if(targetUnit.weapon.glove || targetUnit.weapon.firestorm || targetUnit.weapon.icestorm 
+								|| targetUnit.weapon.blizzard || targetUnit.weapon.pyrocumulus) range = 4;
+								
+				//Ranged -- ['Bow',   'Magma',     'Firestorm', 'Forestfire', 'Pyrocumulus']
+				if(targetUnit.weapon.bow || targetUnit.weapon.magma || targetUnit.weapon.firestorm 
+								|| targetUnit.weapon.forestfire || targetUnit.weapon.pyrocumulus) range = 4;
+								
+				//AOE -- ['Wand',  'Avalanche', 'Icestorm',  'Blizzard',   'Permafrost']
+				if(targetUnit.weapon.wand || targetUnit.weapon.avalanche || targetUnit.weapon.icestorm 
+								|| targetUnit.weapon.blizzard || targetUnit.weapon.permafrost) range = 16;
+								
+				//Full -- ['Sword', 'Magma', 'Avalanche', 'Forestfire', 'Permafrost']
+				if(targetUnit.weapon.sword || targetUnit.weapon.magma || targetUnit.weapon.avalanche 
+								|| targetUnit.weapon.forestfire || targetUnit.weapon.permafrost) range = 16;
+			}
+		}		
+		
+		if(range){
+			//Fill all move tiles
+			for(var i = x - range; i <= x + range; i++){
+	            for(var j = y - range; j <= y + range; j++){
+					if(GameState.grid.tiles[i] && GameState.grid.tiles[i][j] && GameState.grid.tiles[i][j].tile.contents == null) GameState.grid.tiles[i][j].tile.contents = "movable";            	
+	            }
+			}
+			
+			//Fill all hit tiles
+			for(var i = x - (range * 2); i <= x + (range * 2); i++){
+	            for(var j = y - (range * 2); j <= y + (range * 2); j++){
+					if(GameState.grid.tiles[i] && GameState.grid.tiles[i][j] && GameState.grid.tiles[i][j].tile.contents == null) GameState.grid.tiles[i][j].tile.contents = "attackable";            	
+	            }
+			}
+		}
+		
+		Field.update();
+	},
+	
 	updateTimer: function(){
 		if(GameState.start_time){
 			var startTime = new Date(new Date() - new Date(GameState.start_time));
@@ -376,7 +463,31 @@ var UI = {
 			var time = "00:00";
 		}
 		
+		if(GameState.time_left_battle){
+			var startTime = new Date(GameState.time_left_battle);
+			
+			var minutes = (startTime.getMinutes().toString().length == 1)?"0"+startTime.getMinutes():startTime.getMinutes();
+			var seconds = (startTime.getSeconds().toString().length == 1)?"0"+startTime.getSeconds():startTime.getSeconds();
+			
+			var timeLeftBattle = minutes + ":" + seconds;
+		}else{
+			var timeLeftBattle = "00:00";
+		}
+		
+		if(GameState.time_left_ply){
+			var startTime = new Date(GameState.time_left_ply);
+			
+			var minutes = (startTime.getMinutes().toString().length == 1)?"0"+startTime.getMinutes():startTime.getMinutes();
+			var seconds = (startTime.getSeconds().toString().length == 1)?"0"+startTime.getSeconds():startTime.getSeconds();
+			
+			var timeLeftPly = minutes + ":" + seconds;
+		}else{
+			var timeLeftPly = "00:00";
+		}
+		
 		UI.timer.text.time.setText(time);
+		UI.timer.text.timeLeftBattle.setText(timeLeftBattle);
+		UI.timer.text.timeLeftPly.setText(timeLeftPly);
 		
 		UI.timer.text.action.setText("Whose Action? " + GameState.whose_action);
 		UI.timer.text.actionNo.setText("Action # " + GameState.action_count);
@@ -500,7 +611,22 @@ function authenticate() {
 
 						return;
 					});
-				}, 3000);
+					
+					var get_timeLeft = Services.api.time_left();
+					get_timeLeft.then(function(result) {
+						var a = result.battle.split(':'); // split it at the colons
+						var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+						var t = new Date(1970,0,1);
+						t.setSeconds(seconds);
+						GameState.time_left_battle = t;
+						
+						var a = result.ply.split(':'); // split it at the colons
+						var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+						var t = new Date(1970,0,1);
+						t.setSeconds(seconds);
+						GameState.time_left_ply = t;
+					});
+				}, 1000);
 			});
 		},
 		onFail : function() {
