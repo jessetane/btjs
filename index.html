@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
-    <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js"> </script>
-    <script src="http://166.84.136.68:8888/battle/static/underscore/underscore.js"> </script>
-    
-    <script type="text/javascript" src="res/js/kinetic-v3.10.0.min.js"> </script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js"> </script>
+    <script type="text/javascript" src="http://166.84.136.68:8888/battle/static/underscore/underscore.js"> </script>
+    <script type="text/javascript">JSCLASS_PATH = "http://166.84.136.68:8888/battle/static/js.class/src"</script>
+    <script type="text/javascript" src="http://166.84.136.68:8888/battle/static/js.class/src/loader-browser.js"> </script>   
+
+    <script type="text/javascript" src="res/js/kinetic-v3.10.4.min.js"> </script>
     <script type="text/javascript" src="res/js/btjs.js"> </script>
 	<script type="text/javascript" src="res/js/config.js"> </script>
 	<script type="text/javascript" src="res/js/field.js"> </script>
@@ -80,27 +82,46 @@
         				}else{
         					selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.nescient.name;
         				}
+        				UI.setMoveable(index[0], index[1], selectedPlayer);
         			} else {
         				//UI.setRightUnit(GameState.units[unitId]);
         				//Context Menus Will Go Here
         				if(selectedPlayer){
 	        				//TODO: SHOW ACTION CONFIRM
-	        				Services.attack({
-	        					unitID: GameState.getUnitIdByName(selectedPlayer),
-		    					targetLocation: [index[0], index[1]] // GameState.getUnitIdByLocation(index[0], index[1]) //
-	        				});
-        					selectedPlayer = undefined;
-        					UI.setLeftUnit();
+	        				if(GameState.whose_turn == GameState.player || 1 == 1){
+		        				UI.showConfirm({
+			    					header: "Action", 
+			    					message: "Attack unit?", 
+			    					onconfirm: function(){
+				        				Services.attack({
+				        					unitID: GameState.getUnitIdByName(selectedPlayer),
+					    					targetLocation: [index[0], index[1]] // GameState.getUnitIdByLocation(index[0], index[1]) //
+				        				});
+			        					selectedPlayer = undefined;
+        								UI.setMoveable(index[0], index[1], selectedPlayer);
+			        					UI.setLeftUnit();
+			        			}});
+		        			}else{
+		        				alert("It's not your turn");	
+	        				};
         				};
         			}
         		}else{
-        			UI.setLeftUnit();
     				if(selectedPlayer){
-	    				//TODO: SHOW MOVE CONFIRM
-	    				Services.move({
-        					unitID: GameState.getUnitIdByName(selectedPlayer),
-	    					targetLocation: [index[0], index[1]]
-        				});
+        				if(GameState.whose_turn == GameState.player || 1 == 1){
+		    				UI.showConfirm({
+		    					header: "Action", 
+		    					message: "Move unit?", 
+		    					onconfirm: function(){
+				    				Services.move({
+			        					unitID: GameState.getUnitIdByName(selectedPlayer),
+				    					targetLocation: [index[0], index[1]]
+			        				});
+        							UI.setLeftUnit();
+		        			}});
+			        	}else{
+	        				alert("It's not your turn");	
+			        	}
     				}
         		}
         	}
@@ -152,13 +173,18 @@
         	<div id='ui-left' width='200' height='768' oncontextmenu="return false" style="float:left;"> </div>
         	<div id='ui-right' width='200' height='768' oncontextmenu="return false" style="float:right;"> </div>
         	<div id="dialog" oncontextmenu="return false" style="position: absolute; margin: 0; width: 100%">
-    			<div class="modal" id="modalLogin">
+    			<div class="modal" id="modalLogin" style="display: block">
 					<div class="modalHeader">Log in to Binary Tactics</div><br />
 	        		<strong>Username</strong><br />
 	        		<input id="username" type="text" style="width: 100%" value="atkr"/><br /><br />
 	        		<strong>Password</strong><br />
 	        		<input id="password" type="password" style="width: 100%" value="atkr" /><br /><br />
 	        		<div style="width: 100%;" align="right"><button onclick="authenticate()">Log in</button></div>
+	        	</div>
+	        	<div class="modal" id="modalConfirm">
+					<div class="modalHeader" id="modalConfirmHeader">Log in to Binary Tactics</div><br />
+	        		<span id="modalConfirmMessage"></span>
+	        		<div style="width: 100%;" align="right"><button id="modalYes" onclick="UI.modalYes();">Yes</button><button id="modalNo" onclick="UI.modalNo();">No</button></div>
 	        	</div>
         	</div>
         </div>

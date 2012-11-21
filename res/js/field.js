@@ -87,12 +87,26 @@ var Field = {
                 //var o = occupancy[i + (j * 16)];
                 
                 if(GameState.grid && GameState.grid.tiles[i][j].tile.contents != null){
-                    var unitId = GameState.getUnitIdByContents(GameState.grid.tiles[i][j].tile.contents)
-                    
-                    if(GameState.units[unitId].scient)  o = 1;
-                    if(GameState.units[unitId].nescient) o = 2;
-                    
-                    if(GameState.owners[unitId] == "atkr") o += 6;
+                	if(GameState.getUnitIdByContents(GameState.grid.tiles[i][j].tile.contents)){
+                		var unitId = GameState.getUnitIdByContents(GameState.grid.tiles[i][j].tile.contents)
+	                    
+	                    if(GameState.units[unitId].scient)  o = 1;
+	                    if(GameState.units[unitId].nescient) o = 2;
+	                    
+	                    if(GameState.owners[unitId] == "atkr") o += 6;
+                	}else{
+                		switch(GameState.grid.tiles[i][j].tile.contents){
+                			case 'movable':
+                				o = 104;
+                				break;	
+                			case 'attackable':
+                				o = 103;
+                				break;
+                			default:
+                				o = 0;
+                				break;
+                		}
+					}
                 }else{
                     o = 0;
                 }
@@ -101,9 +115,12 @@ var Field = {
                 if(o < 6){
                     tiles[i][j].shapes.get(".background")[0].setFill(colors_assignment_bg_white[o]);
                     tiles[i][j].shapes.get(".foreground")[0].setFill(colors_assignment[o]);
-                }else{
+                }else if(o < 100){
                     tiles[i][j].shapes.get(".background")[0].setFill(colors_assignment_bg_black[o - 5]);
                     tiles[i][j].shapes.get(".foreground")[0].setFill(colors_assignment[o - 5]);
+                }else{
+                    tiles[i][j].shapes.get(".background")[0].setFill(colors_assignment_bg_black[o - 100]);
+                    tiles[i][j].shapes.get(".foreground")[0].setFill(colors_assignment[o - 100]);
                 }
             }
         }
@@ -138,8 +155,7 @@ var Field = {
 			fill: fill,
 			stroke: stroke,
 			strokeWidth: strokeWidth,
-			drawFunc: function() {
-				var context = this.getContext();
+			drawFunc: function(context) {
 				context.globalCompositeOperation = composite;
 				context.beginPath();
 				context.moveTo(0, 0 - this.attrs.radius);
@@ -150,8 +166,8 @@ var Field = {
 					context.lineTo(x, y);
 				}
 				context.closePath();
-				this.fill();
-				this.stroke();
+				this.fill(context);
+				this.stroke(context);
 			}
 		});    	
 	},

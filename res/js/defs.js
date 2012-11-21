@@ -1,13 +1,13 @@
 //Figuring out the best fitting include system for JS will take too long, going monolithic.
-var E = "Earth"
-var F = "Fire"
-var I = "Ice"
-var W = "Wind"
+var E = "Earth";
+var F = "Fire";
+var I = "Ice";
+var W = "Wind";
 
-var ELEMENTS = [E, F, I, W]
+var ELEMENTS = [E, F, I, W];
 
 function Stone(comp){
-    this.comp = {"Earth":0, "Fire":0, "Ice":0, "Wind":0}
+    this.comp = {"Earth":0, "Fire":0, "Ice":0, "Wind":0};
     this.comp["Earth"] = comp[0];
     this.comp["Fire"] = comp[1];
     this.comp["Ice"] = comp[2];
@@ -100,8 +100,44 @@ function Battlefield(grid, player, squad1, squad2){
     this.AOE    = ['Wand',  'Avalanche', 'Icestorm',  'Blizzard',   'Permafrost']
     this.Full   = ['Sword', 'Magma',     'Avalanche', 'Forestfire', 'Permafrost']
     //Grid operations
-    this.on_grid = function(){};
-    this.get_adjacent = function(){};
+    //dumb port
+    this.on_grid = function(tile){
+    	if (0 <= tile[0] < this.grid.x){
+		if (0 <= tile[1] < this.grid.y){
+			return true;
+		}else{
+			return false;
+		}
+	}else{
+		return false;
+	}
+    };
+
+    //dumb port from python
+    this.get_adjacent = function(tile, direction){
+    	var direction = typof direction !== 'undefined' ? direction : 'All';
+        var xpos = tile[0];
+	var ypos = tile[1];
+	var directions = {"East": [[xpos + 1, ypos],], "West": [[xpos - 1, ypos],]}
+	if (ypos &1){
+		directions["North"] = [[xpos + 1, ypos - 1], [xpos, ypos - 1]];
+		directions["South"] = [[xpos + 1, ypos + 1], [xpos, ypos + 1]];
+		directions["Northeast"] = [[xpos + 1, ypos - 1], [xpos + 1, ypos]];
+		directions["Southeast"] = [[xpos + 1, ypos + 1], [xpos + 1, ypos]];
+		directions["Southwest"] = [[xpos, ypos + 1], [xpos - 1, ypos];
+		directions["Northwest"] = [[xpos, ypos - 1], [xpos - 1, ypos];
+	}else{
+		directions["North"] = [[xpos, ypos - 1], [xpos - 1, ypos - 1]];
+		directions["South"] = [[xpos, ypos + 1], [xpos - 1, ypos + 1]];
+		directions["Northeast"] = [[xpos, ypos - 1], [xpos + 1, ypos]];
+		directions["Southeast"] = [[xpos, ypos + 1], [xpos + 1, ypos]];
+		directions["Southwest"] = [[xpos - 1, ypos + 1], [xpos - 1, ypos];
+		directions["Northwest"] = [[xpos - 1, ypos - 1], [xpos - 1, ypos];
+	}
+	directions["All"].concat(directions["North"], directions["East"], directions["South"], directions["West"];
+	var out = [];
+	 
+    };
 
     //Nescient operations
     this.make_parts = function(){};

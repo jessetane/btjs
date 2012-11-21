@@ -5,10 +5,14 @@ var GameState = {
 	locs : undefined,
 	owners : undefined,
 	start_time : undefined,
+	time_left : undefined,
 	units : undefined,
 	HPs : undefined,
-	whose_turn: undefined,
+	whose_action: undefined,
 	player: "",
+	action_count: 0,
+	turn_no: 0,
+	ply_no: 0,
 
 	init : function(result) {
 		this.grid = result.initial_state.grid.grid;
@@ -18,7 +22,7 @@ var GameState = {
 		this.units = result.initial_state.units;
 		this.player_names = result.initial_state.player_names;
 		
-		this.whose_turn = this.player_names[0];
+		this.whose_action = this.player_names[0];
 		
 		//TODO Calculate HPs
 		this.HPs = [];
@@ -31,16 +35,6 @@ var GameState = {
 		if(result.locs){
 			this.clearGridContents();
 			this.HPs = result.HPs;
-			
-			if(result.whose_turn){
-				var turn = (result.whose_turn == this.player_names[0])?this.player_names[1]:this.player_names[0];
-				
-				if(turn != this.whose_turn && turn == this.player && turn != "" && this.player != ""){
-					alert("It's your turn");
-				}
-				
-				if(turn != "") this.whose_turn = turn;
-			}
 			
 			return this.updateUnitLocations(result.locs);
 		}else{
@@ -68,6 +62,24 @@ var GameState = {
 
 		this.locs = locs;
 		return change;
+	},
+	getUnitById : function(id) {
+		if(this.units[id]){
+			return this.units[id];
+		}
+
+		return false;
+	},
+	getUnitByName : function(id) {
+		for (var id in this.units) {
+			var unit = this.units[id];
+			if (unit.scient && unit.scient.name == name)
+				return unit;
+			if (unit.nescient && unit.nescient.name == name)
+				return unit;
+		}
+
+		return false;
 	},
 	getUnitIdByName : function(name) {
 		for (var id in this.units) {

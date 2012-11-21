@@ -79,12 +79,25 @@ var Services = {
 		
 		action.addCallback(function(response){
 			//TODO Update Gamestage field -- (We'll get the field update on the next long poll)
+			if(response.response.result){
+				var unit = GameState.getUnitById(response.response.result[0][0]);
+				console.log(unit);
+				if(unit){
+					if(unit.scient){
+						unit.scient.location = response.response.result[0][1];
+					}else if(unit.nescient){
+						unit.nescient.location = response.response.result[0][1];
+					}
+				}
+				UI.setLeftUnit();
+				UI.setRightUnit();
+			}
 			Field.update();
 			return response; 
 		});
 		
 		action.addErrback(function(response){
-			alert(response);
+			UI.showMessage({message: response});
 			return response;
 		});
 	},
@@ -104,12 +117,42 @@ var Services = {
 		
 		action.addCallback(function(response){
 			//TODO Update Gamestage field -- (We'll get the field update on the next long poll)
+			if(response.response.result){
+				UI.setLeftUnit();
+				UI.setRightUnit();
+				
+				if(response.response.result[0][1] != "Dead."){
+					UI.showMessage({message: response.response.result[0][1] + " Damage."});
+				}else{
+					UI.showMessage({message: "Unit defeated."});
+				}
+			}
 			Field.update();
 			return response; 
 		});
 		
 		action.addErrback(function(response){
-			alert(response);
+			UI.showMessage({message: response});
+			return response;
+		});
+	},
+	
+	pass: function(args){
+		var type = "pass";
+		
+		var action = Services.api.process_action([
+			null,
+			type, //Type
+			null
+		]);
+		
+		action.addCallback(function(response){
+			UI.showMessage({message: "You have passed your turn."});
+			return response; 
+		});
+		
+		action.addErrback(function(response){
+			UI.showMessage({message: response});
 			return response;
 		});
 	},

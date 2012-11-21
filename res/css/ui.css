@@ -19,6 +19,10 @@ button {
 	padding: 8px 16px 8px 16px;
 }
 
+button:hover{
+	background: rgba(180, 180, 180, 0.3);
+}
+
 .modal{
 	background: rgba(20,20,20,0.95); 
 	margin: 0 auto; 
@@ -26,6 +30,7 @@ button {
 	padding: 10px;
 	border: 2px solid rgba(80,80,80,0.3);
 	margin-top: 15%;
+	display: none;
 }
 
 .modalHeader {
