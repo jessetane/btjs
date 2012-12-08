@@ -115,7 +115,7 @@ function Battlefield(grid, player, squad1, squad2){
 
     //dumb port from python
     this.get_adjacent = function(tile, direction){
-    	var direction = typof direction !== 'undefined' ? direction : 'All';
+    	var direction = typeof direction !== 'undefined' ? direction : 'All';
         var xpos = tile[0];
 	var ypos = tile[1];
 	var directions = {"East": [[xpos + 1, ypos],], "West": [[xpos - 1, ypos],]}
@@ -124,17 +124,17 @@ function Battlefield(grid, player, squad1, squad2){
 		directions["South"] = [[xpos + 1, ypos + 1], [xpos, ypos + 1]];
 		directions["Northeast"] = [[xpos + 1, ypos - 1], [xpos + 1, ypos]];
 		directions["Southeast"] = [[xpos + 1, ypos + 1], [xpos + 1, ypos]];
-		directions["Southwest"] = [[xpos, ypos + 1], [xpos - 1, ypos];
-		directions["Northwest"] = [[xpos, ypos - 1], [xpos - 1, ypos];
+		directions["Southwest"] = [[xpos, ypos + 1], [xpos - 1, ypos]];
+		directions["Northwest"] = [[xpos, ypos - 1], [xpos - 1, ypos]];
 	}else{
 		directions["North"] = [[xpos, ypos - 1], [xpos - 1, ypos - 1]];
 		directions["South"] = [[xpos, ypos + 1], [xpos - 1, ypos + 1]];
 		directions["Northeast"] = [[xpos, ypos - 1], [xpos + 1, ypos]];
 		directions["Southeast"] = [[xpos, ypos + 1], [xpos + 1, ypos]];
-		directions["Southwest"] = [[xpos - 1, ypos + 1], [xpos - 1, ypos];
-		directions["Northwest"] = [[xpos - 1, ypos - 1], [xpos - 1, ypos];
+		directions["Southwest"] = [[xpos - 1, ypos + 1], [xpos - 1, ypos]];
+		directions["Northwest"] = [[xpos - 1, ypos - 1], [xpos - 1, ypos]];
 	}
-	directions["All"].concat(directions["North"], directions["East"], directions["South"], directions["West"];
+	directions["All"].concat(directions["North"], directions["East"], directions["South"], directions["West"]);
 	var out = [];
 	 
     };

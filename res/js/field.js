@@ -156,6 +156,8 @@ var Field = {
 			stroke: stroke,
 			strokeWidth: strokeWidth,
 			drawFunc: function(context) {
+			  if (!context || context.length === 0) return
+			  console.log("we never seem to get a valid context here")
 				context.globalCompositeOperation = composite;
 				context.beginPath();
 				context.moveTo(0, 0 - this.attrs.radius);
