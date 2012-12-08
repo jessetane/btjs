@@ -34,7 +34,7 @@ dojo.ready(function(){
                 });
     };
 
-    Services.api = new dojox.rpc.Service("http://166.84.136.68:8888/battle/static/battle.smd");
+    Services.api = new dojox.rpc.Service("http://" + HOST + ":8888/battle/static/battle.smd");
 });
 
 var Services = {
@@ -45,7 +45,7 @@ var Services = {
 		var onFail = args.onFail;
 		
 		var xhrArgs = {
-			url: "http://166.84.136.68:8888/auth/login",
+			url: "http://" + HOST + ":8888/auth/login",
 			postData: "u=" + username + "&p=" + password,
 			handleAs: "json",
 			preventCache: true,
