@@ -125,7 +125,7 @@ function Battlefield(grid, player, squad1, squad2) {
     };
 
     //dumb port from hex_battlefield.py
-    this.get_adjacent = function (tile, direction) {
+    this.get_adjacent = function (tile, direction, distance) {
         var direction = typeof direction !== 'undefined' ? direction : 'All';
         var xpos = tile[0];
         var ypos = tile[1];
@@ -155,7 +155,7 @@ function Battlefield(grid, player, squad1, squad2) {
                 out.add(loc);
             }
         }
-        return out.toArray();
+        return out;
     }
     
     //Nescient operations
@@ -167,17 +167,76 @@ function Battlefield(grid, player, squad1, squad2) {
     this.place_nescient = function () {} ;
     this.get_rotations = function () {} ;
     this.rotate = function () {} ;
-    //weapon operations
-    this.make_pattern = function (location, distance, pointing) {
-        var tiles   = [];
+    
+    // weapon ops
+    this.make_pattern = function (loc, distance, pointing) {
+        var tiles = [];
         var pattern = [];
-        var head    = this.get_adjacent(location, pointing);
-        var cols    = 1;
+        var head = this.get_adjacent(loc, pointing);
+        var cols = 1;
         while (cols !== distance) {
-            
+            pattern = pattern.concat(head.toArray());
+            var temp_head = head;
+            head = new JS.Set()
+            for (var loc in temp_head) {
+                head.add(this.get_adjacent(loc, pointing));
+            }
+            cols++;
         }
-    } ;
-    this.map_to_grid = function () {} ;
-    this.make_range = function () {} ;
+        return pattern;
+    };
+
+    this.map_to_grid = function (loc, weapon) {
+      var weaponHasRange = false;
+      var weaponHasAOE = false;
+      for (var w in this.ranged) {
+          if (this.ranged[w] === weapon.type) {
+              weaponHasRange = true;
+              break;
+          }   
+      }   
+      for (var w in this.AOE) {
+          if (this.AOE[w] === weapon.type) {
+              weaponHasAOE = true;
+              break;
+          }   
+      }   
+      if (weaponHasRange) {
+          var move = 4;
+          var no_hit = this.make_range(loc, move)
+          var hit = this.make_range(loc, 2 * move)
+          return hit.difference(no_hit);
+      } else if (weaponHasAOE) {
+          var tiles = []
+          for (var x=0; x<this.grid.x; x++) {
+              for (var y=0; y<this.grid.y; y++) {
+                  if (x !== loc.x || y !== loc.y) {)  
+                      tiles.push(x, y); 
+                  }   
+              }   
+          }   
+          return tiles;
+      } else {
+          return this.get_adjacent(loc)   
+      }   
+    };  
+
+    this.make_range = function (location, distance) {
+        var tiles = [ self.get_adjacent(location) ]
+        while (tiles.length < distance) {
+            var temp_tiles = tiles.slice(-1)[0]
+            var temp = new JS.Set()
+            for (var t in temp_tiles) {
+                var tile = temp_tiles[t];
+                temp.add(this.get_adjacent(tile));
+            }
+            tiles.push(temp);
+        }
+        var group = new JS.Set();
+        for (var t in tiles) {
+            group.add(tiles[t]);
+        }
+        return group;
+    };
 
 };
