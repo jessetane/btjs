@@ -14,6 +14,7 @@ var GameState = {
 	turn_no: 0,
 	ply_no: 0,
 
+    //This init function is bad, it should check the current state AND initial_state.
 	init : function(result) {
 		this.grid = result.initial_state.grid.grid;
 		this.locs = result.initial_state.init_locs;
@@ -21,7 +22,6 @@ var GameState = {
 		this.start_time = result.initial_state.start_time;
 		this.units = result.initial_state.units;
 		this.player_names = result.initial_state.player_names;
-		
 		this.whose_action = this.player_names[0];
 		
 		//TODO Calculate HPs
