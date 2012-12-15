@@ -226,12 +226,10 @@ function Battlefield(grid, player, squad1, squad2) {
         var tilesets = [ this.get_adjacent(location) ];
         while (tilesets.length < distance) {
             var tileset = tilesets.slice(-1)[0].toArray();
-            var temp = new JS.Set();
             for (var t in tileset) {
                 var tile = tileset[t];
-                temp.add(this.get_adjacent(tile));
+                tilesets.push(this.get_adjacent(tile));
             }
-            tilesets.push(temp);
         }
         var group = new JS.Set();
         for (var t in tilesets) {
