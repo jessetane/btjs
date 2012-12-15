@@ -15,133 +15,141 @@
     <script type="text/javascript" src="res/js/defs.js"> </script>
     <script type="text/javascript" src="res/js/services.js"> </script>
 		<script type="text/javascript">
-    /* MAJOR BUGS
-       There is no desticition in the UI between the first and second action of a ply (turn).
-       The pass button does not work.
-       Players cannot target their own units.
-       Whose_action is set incorrectly in btjs.js
-       There is no code for hexagonal adjacency.
-       The game model and the display code are not cleanly separated. 
-       blocking/events UI updates in general.
-    */
-    	function $ (selector, el) {  
-		     if (!el) {el = document;}  
-		     return el.querySelector(selector);  
-		}
-		function $$ (selector, el) {  
-	    	if (!el) {el = document;}  
-	    	return el.querySelectorAll(selector);
-    	}
-        Element.prototype.$ = function (selector) {
-            return this.querySelector(selector);  
-        };
-        Element.prototype.$$ = function (selector) {
-            return this.querySelectorAll(selector);  
-        };
-        
-        var selectedPlayer = undefined; //TODO: Where to put this?
-        
-        function init(){
-        	Field.init();
-        	UI.init();
-        	
-        	Field.onTileClick = function(index){
-        		var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
-        		if(unitId){ //If unit is at location
-        			//Check Owner
-        			if(GameState.owners[unitId] == GameState.player){
-        				UI.setLeftUnit(GameState.units[unitId], unitId);
-        				//Context Menus Will Go Here
-        				//Select player
-        				selectedPlayer = undefined;
-        				if(GameState.grid.tiles[index[0]][index[1]].tile.contents.scient){
-        					selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.scient.name;
-        				}else{
-        					selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.nescient.name;
-        				}
-        				UI.setMoveable(index[0], index[1], selectedPlayer);
-        			} else {
-        				//UI.setRightUnit(GameState.units[unitId]);
-        				//Context Menus Will Go Here
-        				if(selectedPlayer){
-	        				//TODO: SHOW ACTION CONFIRM
-	        				if(GameState.whose_turn == GameState.player || 1 == 1){
-		        				UI.showConfirm({
-			    					header: "Action", 
-			    					message: "Attack unit?", 
-			    					onconfirm: function(){
-				        				Services.attack({
-				        					unitID: GameState.getUnitIdByName(selectedPlayer),
-					    					targetLocation: [index[0], index[1]] // GameState.getUnitIdByLocation(index[0], index[1]) //
-				        				});
-			        					selectedPlayer = undefined;
-        								UI.setMoveable(index[0], index[1], selectedPlayer);
-			        					UI.setLeftUnit();
-			        			}});
-		        			}else{
-		        				alert("It's not your turn");	
-	        				};
-        				};
-        			}
-        		}else{
-    				if(selectedPlayer){
-        				if(GameState.whose_turn == GameState.player || 1 == 1){
-		    				UI.showConfirm({
-		    					header: "Action", 
-		    					message: "Move unit?", 
-		    					onconfirm: function(){
-				    				Services.move({
-			        					unitID: GameState.getUnitIdByName(selectedPlayer),
-				    					targetLocation: [index[0], index[1]]
-			        				});
-        							UI.setLeftUnit();
-		        			}});
-			        	}else{
-	        				alert("It's not your turn");	
-			        	}
-    				}
-        		}
-        	}
-        	
-        	Field.onTileOver = function(index){
-        		var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
-        		if(unitId){ //If unit is at location
-        			//Check Owner
-        			if(GameState.owners[unitId] != GameState.player){
-        				UI.setRightUnit(GameState.units[unitId], unitId);
-        				//Context Menus Will Go Here
-        			} else {
-        				UI.setRightUnit();
-        				//UI.setRightUnit(GameState.units[unitId]);
-        				//Context Menus Will Go Here
-        			}
-        		}else{
-    				UI.setRightUnit();
-        		}
-        	}
-        	// Field.onTileOver = function(index, position){
-        		// UI.showTileIndicator(position[0], position[1]);
-        	// }
-        	        	
-        	resizeCanvas();
-        }
-        
-        function resizeCanvas(){
-        	var newWidth = window.innerWidth;
-			var newHeight = window.innerHeight - 5;
-		        	
-        	$(".shell").style.width = newWidth;
-        	$(".shell").style.height = newHeight;
-        	
-        	Field.setSize(newWidth, newHeight);
-        	UI.setSize(200, newHeight);
-        }
-		window.addEventListener('resize', resizeCanvas, false);
-		window.addEventListener('orientationchange', resizeCanvas, false);
-		
-        
-        window.onload = init;
+    	/* MAJOR BUGS
+	       There is no desticition in the UI between the first and second action of a ply (turn).
+	       The pass button does not work.
+	       Players cannot target their own units.
+	       Whose_action is set incorrectly in btjs.js
+	       There is no code for hexagonal adjacency.
+	       The game model and the display code are not cleanly separated. 
+	       blocking/events UI updates in general.
+	    */
 
+	   	function $(selector, el) {
+			    if (!el) {
+			        el = document;
+			    }
+			    return el.querySelector(selector);
+			}
+
+			function $$(selector, el) {
+			    if (!el) {
+			        el = document;
+			    }
+			    return el.querySelectorAll(selector);
+			}
+
+			Element.prototype.$ = function (selector) {
+			    return this.querySelector(selector);
+			};
+
+			Element.prototype.$$ = function (selector) {
+			    return this.querySelectorAll(selector);
+			};
+
+			var selectedPlayer = undefined; //TODO: Where to put this?
+
+			function init() {
+			    Field.init();
+			    UI.init();
+
+			    Field.onTileClick = function (index) {
+			        var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
+			        if (unitId) { //If unit is at location
+			            //Check Owner
+			            if (GameState.owners[unitId] == GameState.player) {
+			                UI.setLeftUnit(GameState.units[unitId], unitId);
+			                //Context Menus Will Go Here
+			                //Select player
+			                selectedPlayer = undefined;
+			                if (GameState.grid.tiles[index[0]][index[1]].tile.contents.scient) {
+			                    selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.scient.name;
+			                } else {
+			                    selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.nescient.name;
+			                }
+			                UI.setMoveable(index[0], index[1], selectedPlayer);
+			            } else {
+			                //UI.setRightUnit(GameState.units[unitId]);
+			                //Context Menus Will Go Here
+			                if (selectedPlayer) {
+			                    //TODO: SHOW ACTION CONFIRM
+			                    if (GameState.whose_turn == GameState.player || 1 == 1) {
+			                        UI.showConfirm({
+			                            header: "Action",
+			                            message: "Attack unit?",
+			                            onconfirm: function () {
+			                                Services.attack({
+			                                    unitID: GameState.getUnitIdByName(selectedPlayer),
+			                                    targetLocation: [index[0], index[1]] // GameState.getUnitIdByLocation(index[0], index[1]) //
+			                                });
+			                                selectedPlayer = undefined;
+			                                UI.setMoveable(index[0], index[1], selectedPlayer);
+			                                UI.setLeftUnit();
+			                            }
+			                        });
+			                    } else {
+			                        alert("It's not your turn");
+			                    };
+			                };
+			            }
+			        } else {
+			            if (selectedPlayer) {
+			                if (GameState.whose_turn == GameState.player || 1 == 1) {
+			                    UI.showConfirm({
+			                        header: "Action",
+			                        message: "Move unit?",
+			                        onconfirm: function () {
+			                            Services.move({
+			                                unitID: GameState.getUnitIdByName(selectedPlayer),
+			                                targetLocation: [index[0], index[1]]
+			                            });
+			                            UI.setLeftUnit();
+			                        }
+			                    });
+			                } else {
+			                    alert("It's not your turn");
+			                }
+			            }
+			        }
+			    }
+
+			    Field.onTileOver = function (index) {
+			        var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
+			        if (unitId) { //If unit is at location
+			            //Check Owner
+			            if (GameState.owners[unitId] != GameState.player) {
+			                UI.setRightUnit(GameState.units[unitId], unitId);
+			                //Context Menus Will Go Here
+			            } else {
+			                UI.setRightUnit();
+			                //UI.setRightUnit(GameState.units[unitId]);
+			                //Context Menus Will Go Here
+			            }
+			        } else {
+			            UI.setRightUnit();
+			        }
+			    }
+
+			    // Field.onTileOver = function(index, position){
+			    // 	UI.showTileIndicator(position[0], position[1]);
+			    // }
+
+			    resizeCanvas();
+			}
+
+			function resizeCanvas() {
+			    var newWidth = window.innerWidth;
+			    var newHeight = window.innerHeight - 5;
+			    $(".shell").style.width = newWidth;
+			    $(".shell").style.height = newHeight;
+			    Field.setSize(newWidth, newHeight);
+			    UI.setSize(200, newHeight);
+			}
+
+			window.addEventListener('resize', resizeCanvas, false);
+			window.addEventListener('orientationchange', resizeCanvas, false);
+			window.onload = init;
+			
     </script>    
 
     <link href="res/fonts/sansation.css" rel="stylesheet" type="text/css" />
