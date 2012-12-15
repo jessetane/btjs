@@ -223,19 +223,19 @@ function Battlefield(grid, player, squad1, squad2) {
     };  
 
     this.make_range = function (location, distance) {
-        var tiles = [ self.get_adjacent(location) ]
-        while (tiles.length < distance) {
-            var temp_tiles = tiles.slice(-1)[0]
-            var temp = new JS.Set()
-            for (var t in temp_tiles) {
-                var tile = temp_tiles[t];
+        var tilesets = [ this.get_adjacent(location) ];
+        while (tilesets.length < distance) {
+            var tileset = tilesets.slice(-1)[0].toArray();
+            var temp = new JS.Set();
+            for (var t in tileset) {
+                var tile = tileset[t];
                 temp.add(this.get_adjacent(tile));
             }
-            tiles.push(temp);
+            tilesets.push(temp);
         }
         var group = new JS.Set();
-        for (var t in tiles) {
-            group.union(tiles[t]);
+        for (var t in tilesets) {
+            group.union(tilesets[t]);
         }
         return group;
     };
