@@ -235,7 +235,7 @@ function Battlefield(grid, player, squad1, squad2) {
         }
         var group = new JS.Set();
         for (var t in tilesets) {
-            group.union(tilesets[t]);
+            group = group.union(tilesets[t]);
         }
         return group;
     };
