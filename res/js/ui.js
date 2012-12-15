@@ -598,7 +598,7 @@ function authenticate() {
 							if(GameState.update(result[result.length - 1])) {
 								Field.update();
 							
-								if((GameState.action_count % 2) === 0){
+								if((GameState.action_count % 2) === 1){
 									GameState.whose_turn = GameState.player_names[0];
 								}else{
 									GameState.whose_turn = GameState.player_names[1];
