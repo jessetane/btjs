@@ -210,9 +210,10 @@ function Battlefield(grid, player, squad1, squad2) {
           var tiles = []
           for (var x=0; x<this.grid.x; x++) {
               for (var y=0; y<this.grid.y; y++) {
-                  if (x !== loc.x || y !== loc.y) {
-                      tiles.push(x, y); 
-                  }   
+                  if (x !== loc[0] || y !== loc[1]) {
+                      var pt = [x, y]
+                      tiles.push();
+                  }
               }   
           }   
           return tiles;
@@ -234,7 +235,7 @@ function Battlefield(grid, player, squad1, squad2) {
         }
         var group = new JS.Set();
         for (var t in tiles) {
-            group.add(tiles[t]);
+            group.union(tiles[t]);
         }
         return group;
     };
