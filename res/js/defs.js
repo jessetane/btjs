@@ -210,7 +210,7 @@ function Battlefield(grid, player, squad1, squad2) {
           var tiles = []
           for (var x=0; x<this.grid.x; x++) {
               for (var y=0; y<this.grid.y; y++) {
-                  if (x !== loc.x || y !== loc.y) {)  
+                  if (x !== loc.x || y !== loc.y) {
                       tiles.push(x, y); 
                   }   
               }   
