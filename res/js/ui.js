@@ -555,7 +555,7 @@ function authenticate() {
 			$('#modalLogin').style.display = 'none';
 
 			//Get username
-			username = Services.api.get_username();
+			username = Services.battle.get_username();
 			username.then(function(result) {
 				username = username.results[0];
 				GameState.player = username;
@@ -563,7 +563,7 @@ function authenticate() {
 			});
 
 			//Get initial state
-			get_initial = Services.api.initial_state();
+			get_initial = Services.battle.initial_state();
 			get_initial.then(function(result) {
 				GameState.init(result);
 				//Field.update();
@@ -575,7 +575,7 @@ function authenticate() {
 				}
 				UI.unitLeft.layer.draw();
 				
-				var get_state = Services.api.get_state();
+				var get_state = Services.battle.get_state();
 				get_state.then(function(result) {
 					GameState.update(result[result.length - 1]);
 					Field.update();
@@ -588,7 +588,7 @@ function authenticate() {
 				});
 
 				_intervalUpdateState = setInterval(function() {
-					var get_state = Services.api.get_state();
+					var get_state = Services.battle.get_state();
 					get_state.then(function(result) {
 						if(result.length != GameState.action_count){
 							GameState.action_count = result.length; 
@@ -612,7 +612,7 @@ function authenticate() {
 						return;
 					});
 					
-					var get_timeLeft = Services.api.time_left();
+					var get_timeLeft = Services.battle.time_left();
 					get_timeLeft.then(function(result) {
 						var a = result.battle.split(':'); // split it at the colons
 						var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 

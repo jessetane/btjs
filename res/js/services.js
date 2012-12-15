@@ -34,7 +34,7 @@ dojo.ready(function(){
                 });
     };
 
-    Services.api = new dojox.rpc.Service("http://" + HOST + ":8888/battle/static/battle.smd");
+    Services.battle = new dojox.rpc.Service("http://" + HOST + ":8888/battle/static/battle.smd");
 });
 
 var Services = {
@@ -70,8 +70,8 @@ var Services = {
 		var targetLocation = args.targetLocation || [0,0];
 		
 		//Example 
-		//Services.api.process_action(["48632008", "move", [2, 2]])
-		var action = Services.api.process_action([
+		//Services.battle.process_action(["48632008", "move", [2, 2]])
+		var action = Services.battle.process_action([
 			unitID, //Unit
 			type, //Type
 			targetLocation //Target
@@ -108,8 +108,8 @@ var Services = {
 		var targetLocation = args.targetLocation || [0,0];
 		
 		//Example???
-		//Services.api.process_action(["48632008", "attack", [2, 2]])
-		var action = Services.api.process_action([
+		//Services.battle.process_action(["48632008", "attack", [2, 2]])
+		var action = Services.battle.process_action([
 			unitID, //Unit
 			type, //Type
 			targetLocation //Target
@@ -140,7 +140,7 @@ var Services = {
 	pass: function(args){
 		var type = "pass";
 		
-		var action = Services.api.process_action([
+		var action = Services.battle.process_action([
 			null,
 			type, //Type
 			null
@@ -157,5 +157,5 @@ var Services = {
 		});
 	},
 	
-	api: undefined
+	battle: undefined
 }

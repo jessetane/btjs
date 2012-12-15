@@ -16,6 +16,9 @@ var GameState = {
 
     //This init function is bad, it should check the current state AND initial_state.
 	init : function(result) {
+	    // for testing
+	    this.init_state = result.initial_state;
+	    
 		this.grid = result.initial_state.grid.grid;
 		this.locs = result.initial_state.init_locs;
 		this.owners = result.initial_state.owners;
