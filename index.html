@@ -14,23 +14,23 @@
     <script type="text/javascript" src="res/js/ui.js"></script>
     <script type="text/javascript" src="res/js/defs.js"></script>
     <script type="text/javascript" src="res/js/services.js"></script>
-		<script type="text/javascript" src="res/js/init.js"></script>
+    <script type="text/javascript" src="res/js/init.js"></script>
 
     <link href="res/fonts/sansation.css" rel="stylesheet" type="text/css" />
     <link href="res/css/ui.css" rel="stylesheet" type="text/css" />
-	
+    
     <style type="text/css">
-		body{
-			 background-color: #1C1C1C; 
-			 margin: 0px;	
-			 color: white;
-			 font: 13px/19px 'SansationRegular', Arial, sans-serif;
-		}
-		
-		input{
-			border: 0px solid black;	
-			outline: none;
-		}
+        body{
+             background-color: #1C1C1C; 
+             margin: 0px;   
+             color: white;
+             font: 13px/19px 'SansationRegular', Arial, sans-serif;
+        }
+        
+        input{
+            border: 0px solid black;
+            outline: none;
+        }
 
         .shell{
             margin: 0 auto;
@@ -50,25 +50,24 @@
     
     <body>
         <div class="shell">
-        	
-        	<div id='field' width="768" height="768" oncontextmenu="return false" style="position: absolute;"> </div>
-        	<div id='ui-left' width='200' height='768' oncontextmenu="return false" style="float:left;"> </div>
-        	<div id='ui-right' width='200' height='768' oncontextmenu="return false" style="float:right;"> </div>
-        	<div id="dialog" oncontextmenu="return false" style="position: absolute; margin: 0; width: 100%">
-    			<div class="modal" id="modalLogin" style="display: block">
-					<div class="modalHeader">Log in to Binary Tactics</div><br />
-	        		<strong>Username</strong><br />
-	        		<input id="username" type="text" style="width: 100%" value="atkr"/><br /><br />
-	        		<strong>Password</strong><br />
-	        		<input id="password" type="password" style="width: 100%" value="atkr" /><br /><br />
-	        		<div style="width: 100%;" align="right"><button onclick="authenticate()">Log in</button></div>
-	        	</div>
-	        	<div class="modal" id="modalConfirm">
-					<div class="modalHeader" id="modalConfirmHeader">Log in to Binary Tactics</div><br />
-	        		<span id="modalConfirmMessage"></span>
-	        		<div style="width: 100%;" align="right"><button id="modalYes" onclick="UI.modalYes();">Yes</button><button id="modalNo" onclick="UI.modalNo();">No</button></div>
-	        	</div>
-        	</div>
+            <div id='field' width="768" height="768" oncontextmenu="return false" style="position: absolute;"> </div>
+            <div id='ui-left' width='200' height='768' oncontextmenu="return false" style="float:left;"> </div>
+            <div id='ui-right' width='200' height='768' oncontextmenu="return false" style="float:right;"> </div>
+            <div id="dialog" oncontextmenu="return false" style="position: absolute; margin: 0; width: 100%">
+                <div class="modal" id="modalLogin" style="display: block">
+                    <div class="modalHeader">Log in to Binary Tactics</div><br />
+                    <strong>Username</strong><br />
+                    <input id="username" type="text" style="width: 100%" value="atkr"/><br /><br />
+                    <strong>Password</strong><br />
+                    <input id="password" type="password" style="width: 100%" value="atkr" /><br /><br />
+                    <div style="width: 100%;" align="right"><button onclick="authenticate()">Log in</button></div>
+                </div>
+                <div class="modal" id="modalConfirm">
+                    <div class="modalHeader" id="modalConfirmHeader">Log in to Binary Tactics</div><br />
+                    <span id="modalConfirmMessage"></span>
+                    <div style="width: 100%;" align="right"><button id="modalYes" onclick="UI.modalYes();">Yes</button><button id="modalNo" onclick="UI.modalNo();">No</button></div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
