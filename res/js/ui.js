@@ -575,33 +575,35 @@ function authenticate() {
 				}
 				UI.unitLeft.layer.draw();
 				
-				var get_state = Services.battle.get_state();
-				get_state.then(function(result) {
+				var get_states = Services.battle.get_states();
+				get_states.then(function(result) {
 					GameState.update(result[result.length - 1]);
 					Field.update();
 					
-					if((GameState.action_count % 2) < 2){
-						GameState.whose_turn = GameState.player_names[0];
+				    if((GameState.turn_no % 2) === 1){
+						GameState.whose_action = GameState.player_names[0];
 					}else{
-						GameState.whose_turn = GameState.player_names[1];
+						GameState.whose_action = GameState.player_names[1];
 					}
 				});
-
+                //This polling code is wrong. it should be the check function from hex_battle.state
 				_intervalUpdateState = setInterval(function() {
-					var get_state = Services.battle.get_state();
-					get_state.then(function(result) {
+					var get_states = Services.battle.get_states();
+					get_states.then(function(result) {
 						if(result.length != GameState.action_count){
-							GameState.action_count = result.length; 
-							GameState.turn_no = ((GameState.action_count - (GameState.action_count % 4)) / 4) + 1;
+							GameState.action_count = result.length; //this FAILS when action_count is less than 2?
+							GameState.turn_no = ((GameState.action_count - (GameState.action_count % 4)) / 4) + 1; 
 							GameState.ply_no = (GameState.action_count % 2) + 1; 
 							
 							if(GameState.update(result[result.length - 1])) {
 								Field.update();
 							
-								if((GameState.action_count % 2) === 1){
-									GameState.whose_turn = GameState.player_names[0];
+								if((GameState.turn_no % 2) === 1){ //turn_no determines whose_action it is.
+								    console.log("iffy");
+									GameState.whose_action = GameState.player_names[0];
 								}else{
-									GameState.whose_turn = GameState.player_names[1];
+								    console.log("elsey");
+									GameState.whose_action = GameState.player_names[1];
 								}
 							};
 						};
