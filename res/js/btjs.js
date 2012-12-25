@@ -11,7 +11,6 @@ var GameState = {
 	whose_action: undefined,
 	player: "",
 	action_count: 0,
-	turn_no: 0,
 	ply_no: 0,
 
     //This init function is bad, it should check the current state AND initial_state.

@@ -491,7 +491,7 @@ var UI = {
 		
 		UI.timer.text.action.setText("Whose Action? " + GameState.whose_action);
 		UI.timer.text.actionNo.setText("Action # " + GameState.action_count);
-		UI.timer.text.turn.setText("Turn # " + GameState.turn_no);
+		UI.timer.text.turn.setText("Ply # " + GameState.ply_no);
 		
 		UI.timer.text.player.setText("Player: " + GameState.player);
 		
@@ -580,7 +580,7 @@ function authenticate() {
 					GameState.update(result[result.length - 1]);
 					Field.update();
 					
-				    if((GameState.turn_no % 2) === 1){
+				    if((GameState.ply_no % 2) === 1){
 						GameState.whose_action = GameState.player_names[0];
 					}else{
 						GameState.whose_action = GameState.player_names[1];
@@ -591,14 +591,14 @@ function authenticate() {
 					var get_states = Services.battle.get_states();
 					get_states.then(function(result) {
 						if(result.length != GameState.action_count){
+							//GameState.action_count  = result[result.length - 1]. num + 1;
+							//GameState.ply_no = Math.floor(GameState.action_count / 4);
 							GameState.action_count = result.length; //this FAILS when action_count is less than 2?
-							GameState.turn_no = ((GameState.action_count - (GameState.action_count % 4)) / 4) + 1; 
-							GameState.ply_no = (GameState.action_count % 2) + 1; 
-							
+							GameState.ply_no = ((GameState.action_count - (GameState.action_count % 4)) / 4) + 1; 
 							if(GameState.update(result[result.length - 1])) {
 								Field.update();
-							
-								if((GameState.turn_no % 2) === 1){ //turn_no determines whose_action it is.
+								if((GameState.ply_no % 2) === 1) { //ply_no determines whose_action it is.
+								//if((GameState.action_count % 4) === 0) {
 								    console.log("iffy");
 									GameState.whose_action = GameState.player_names[0];
 								}else{
