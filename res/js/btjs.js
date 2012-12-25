@@ -10,8 +10,9 @@ var GameState = {
     HPs : undefined,
     whose_action: undefined,
     player: "",
-    action_count: 0,
-    ply_no: 0,
+    action_count: 1,
+    ply_no: 1,
+    turn_no: 1,
 
     //This init function is bad, it should check the current state AND initial_state.
     init : function(result) {

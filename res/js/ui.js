@@ -191,9 +191,21 @@ var UI = {
                 align: "center",
                 verticalAlign: "middle"
             }),
-            turn: new Kinetic.Text({
+            /*
+            ply: new Kinetic.Text({
                 x: 0,
                 y: 192,
+                text: "Ply #",
+                fontSize: 12,
+                textFill: "white",
+                fontFamily: "SansationRegular",
+                align: "center",
+                verticalAlign: "middle"
+            }),
+            */
+            turn: new Kinetic.Text({
+                x: 0,
+                y: 192, //y: 212,
                 text: "Turn #",
                 fontSize: 12,
                 textFill: "white",
@@ -259,6 +271,7 @@ var UI = {
         UI.timer.layer.add(UI.timer.text.timeLeftPly);
         UI.timer.layer.add(UI.timer.text.action);
         UI.timer.layer.add(UI.timer.text.actionNo);
+        //UI.timer.layer.add(UI.timer.text.ply);
         UI.timer.layer.add(UI.timer.text.turn);
         UI.timer.layer.add(UI.timer.text.player);
         UI.stageRight.add(UI.timer.layer);
@@ -491,8 +504,8 @@ var UI = {
         
         UI.timer.text.action.setText("Whose Action? " + GameState.whose_action);
         UI.timer.text.actionNo.setText("Action # " + GameState.action_count);
-        UI.timer.text.turn.setText("Ply # " + GameState.ply_no);
-        
+        UI.timer.text.turn.setText("Turn #" + GameState.turn_no);
+        //UI.timer.text.ply.setText("Ply # " + GameState.ply_no);
         UI.timer.text.player.setText("Player: " + GameState.player);
         
         UI.timer.layer.draw();
@@ -586,23 +599,25 @@ function authenticate() {
                         GameState.whose_action = GameState.player_names[1];
                     }
                 });
-                //This polling code is wrong. it should be the check function from hex_battle.state
+                //This whole function should NOT be in the UI!
                 _intervalUpdateState = setInterval(function() {
                     var get_states = Services.battle.get_states();
                     get_states.then(function(result) {
-                        if(result.length != GameState.action_count){
-                            //GameState.action_count  = result[result.length - 1]. num + 1;
-                            //GameState.ply_no = Math.floor(GameState.action_count / 4);
-                            GameState.action_count = result.length; //this FAILS when action_count is less than 2?
-                            GameState.ply_no = ((GameState.action_count - (GameState.action_count % 4)) / 4) + 1; 
+                        var num = result[result.length - 1].num + 1 //get_states returns the last state, not the current state!
+                        if(num != GameState.action_count){ //have we polled already this action?
+                            GameState.action_count  = num;
+                            if ((GameState.action_count % 2) === 1) { //does the action have an odd number?
+                                GameState.ply_no = Math.ceil(GameState.action_count / 2);
+                                if ((GameState.action_count % 4) === 1) { 
+                                    GameState.turn_no = Math.ceil(GameState.ply_no / 2);
+                                }
+                            }
+                            
                             if(GameState.update(result[result.length - 1])) {
                                 Field.update();
                                 if((GameState.ply_no % 2) === 1) { //ply_no determines whose_action it is.
-                                //if((GameState.action_count % 4) === 0) {
-                                    console.log("iffy");
                                     GameState.whose_action = GameState.player_names[0];
                                 }else{
-                                    console.log("elsey");
                                     GameState.whose_action = GameState.player_names[1];
                                 }
                             };
