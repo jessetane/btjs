@@ -1,4 +1,5 @@
 //Figuring out the best fitting include system for JS will take too long, going monolithic.
+//Lots of constructor cheating.
 var E = "Earth";
 var F = "Fire";
 var I = "Ice";
@@ -21,29 +22,40 @@ function Unit(element, comp, name, loc) {
     this.element = element;
     this.name = name;
     this.loc = loc;
-    this.setVal = function () {return this.E + this.F + this.I + this.W; };
+    this.setVal = function () {return this.comp[E] + this.comp[F] + this.comp[I] + this.comp[W]; };
     this.val = this.setVal();
     this.calcstats = function () {
-        this.p    = 2 * (this.F + this.E) + this.I + this.W;
-        this.m    = 2 * (this.I + this.W) + this.F + this.E;
-        this.atk  = 2 * (this.F + this.I) + this.E + this.W + (2 * this.val());
-        this.defe = 2 * (this.E + this.W) + this.F + this.I;
+        this.p    = 2 * (this.comp[F] + this.comp[E]) + this.comp[I] + this.comp[W];
+        this.m    = 2 * (this.comp[I] + this.comp[W]) + this.comp[F] + this.comp[E];
+        this.atk  = 2 * (this.comp[F] + this.comp[I]) + this.comp[E] + this.comp[W] + (2 * this.val);
+        this.defe = 2 * (this.comp[E] + this.comp[W]) + this.comp[F] + this.comp[I];
         //
-        this.pdef = this.p + this.defe + (2 * this.E);
-        this.patk = this.p + this.atk  + (2 * this.F);
-        this.matk = this.m + this.atk  + (2 * this.I);
-        this.mdef = this.m + this.defe + (2 * this.W);
-        this.hp   = 4 * ((this.pdef + this.mdef) + this.val());
+        this.pdef = this.p + this.defe + (2 * this.comp[E]);
+        this.patk = this.p + this.atk  + (2 * this.comp[F]);
+        this.matk = this.m + this.atk  + (2 * this.comp[I]);
+        this.mdef = this.m + this.defe + (2 * this.comp[W]);
+        this.hp   = 4 * ((this.pdef + this.mdef) + this.val);
     };
 }
 
-function Scient(element, comp, name, loc, weapon, weapon_bonus) {
+function Scient(scient) {
     "use strict";
+    //Cheating with the constructor, scient takes a scient as input.
+    //old constuctor: element, comp, name, loc, weapon, weapon_bonus
+    var element       = scient.element;
+    var comp          = _.values(scient.comp);
+    var name          = scient.name;
+    var loc           = scient.location;
     Unit.call(this, element, comp, name, loc);
     this.move         = 4;
-    this.weapon       = weapon;
-    this.weapon_bonus = weapon_bonus;
-    this.equip_limit  = new Stone(1, 1, 1, 1);
+    var wep           = scient.weapon;
+    var wep_type      = _.keys(wep)[0];
+    var wep_el        = wep[wep_type].element;
+    var wep_comp      = _.values(wep[wep_type].comp);
+    //bad idea.
+    this.weapon       = new window[wep_type.charAt(0).toUpperCase() + wep_type.slice(1)](wep_el, wep_comp)
+    this.weapon_bonus = scient.weapon_bonus;
+    this.sex          = scient.sex
     this.val          = this.setVal();
     this.calcstats();
 }
@@ -86,30 +98,39 @@ function Tile(comp, contents) {
     this.contents = contents;
 }
 
-function Grid(comp, x, y, tiles) {
+function Grid(grid) {
     "use strict";
+    var comp = _.values(grid.comp);
     Stone.call(this, comp);
-    this.x = x;
-    this.y = y;
+    this.x = grid.x;
+    this.y = grid.y;
     this.size = [this.x, this.y];
+    //convert tiles and contents.
+    var tiles = [];
+    for (var i in _.range(this.x)) {
+        tiles[i] = [];
+        for (var j in _.range(this.y)) {
+            var comp = _.values(grid.tiles[i][j].tile.comp);
+            var contents = null;
+            try {contents = new Scient(grid.tiles[i][j].tile.contents.scient);} catch(e){};
+            tiles[i][j] =  new Tile(comp, contents);
+        };
+    };
     this.tiles = tiles;
 }
 JS.require('JS.Set');
-function Battlefield(grid, player, squad1, squad2) {
+function Battlefield(grid, units) {
     "use strict";
-    this.grid = grid;
-    this.player = player;
-    this.squad1 = squad1;
-    this.squad2 = squad2;
+    this.grid  = new Grid(grid);
+    this.units = units;
     this.graveyard = [];
     this.dmg_queue = {};
-    this.squads = [this.squad1, this.squad2];
-    //this.units = this.getUnits()
     this.direction = {0: 'North', 1: 'Northeast', 2: 'Southeast', 3: 'South', 4: 'Southwest', 5: 'Northwest'};
     this.ranged = ['Bow',   'Magma',     'Firestorm', 'Forestfire', 'Pyrocumulus'];
     this.DOT    = ['Glove', 'Firestorm', 'Icestorm',  'Blizzard',   'Pyrocumulus'];
     this.AOE    = ['Wand',  'Avalanche', 'Icestorm',  'Blizzard',   'Permafrost'];
     this.Full   = ['Sword', 'Magma',     'Avalanche', 'Forestfire', 'Permafrost'];
+    
     //Grid operations
     //dumb port
     this.on_grid = function (tile) {

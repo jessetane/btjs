@@ -148,7 +148,7 @@ var Services = {
         ]);
         
         action.addCallback(function(response){
-            UI.showMessage({message: "You have passed your turn."});
+            UI.showMessage({message: "You have passed for one action."});
             return response; 
         });
         

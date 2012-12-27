@@ -2,17 +2,17 @@
 var UI = {
 
     _intervalTimer: undefined,
-    
+
     _modalCallback: undefined,
 
-    stageLeft : undefined,
-    stageRight : undefined,
+    stageLeft: undefined,
+    stageRight: undefined,
 
-    setSize : function(width, height) {
+    setSize: function(width, height) {
         UI.stageLeft.setSize(width, height);
         UI.update();
     },
-    
+
     unitLeft: {
         layer: new Kinetic.Layer(),
         shape: new Kinetic.RegularPolygon({
@@ -68,7 +68,7 @@ var UI = {
             })
         }
     },
-    
+
     unitRight: {
         layer: new Kinetic.Layer(),
         shape: new Kinetic.RegularPolygon({
@@ -124,7 +124,7 @@ var UI = {
             })
         }
     },
-    
+
     timer: {
         layer: new Kinetic.Layer(),
         text: {
@@ -205,7 +205,8 @@ var UI = {
             */
             turn: new Kinetic.Text({
                 x: 0,
-                y: 192, //y: 212,
+                y: 192,
+                //y: 212,
                 text: "Turn #",
                 fontSize: 12,
                 textFill: "white",
@@ -215,7 +216,7 @@ var UI = {
             })
         }
     },
-    
+
     buttonPass: {
         layer: new Kinetic.Layer(),
         shape: new Kinetic.RegularPolygon({
@@ -242,30 +243,30 @@ var UI = {
             })
         }
     },
-    
-    init : function() {
+
+    init: function() {
         UI.stageLeft = new Kinetic.Stage({
-            container : "ui-left",
-            width : 200,
-            height : 768
+            container: "ui-left",
+            width: 200,
+            height: 768
         });
-        
+
         UI.stageRight = new Kinetic.Stage({
-            container : "ui-right",
-            width : 200,
-            height : 768
+            container: "ui-right",
+            width: 200,
+            height: 768
         });
-        
-        UI.buttonPass.shape.on("click", function(){
+
+        UI.buttonPass.shape.on("click", function() {
             UI.showConfirm({
                 header: "Pass",
                 message: "Are you sure?",
-                onconfirm: function(){
+                onconfirm: function() {
                     Services.pass();
                 }
             });
         });
-        
+
         UI.timer.layer.add(UI.timer.text.time);
         UI.timer.layer.add(UI.timer.text.timeLeftBattle);
         UI.timer.layer.add(UI.timer.text.timeLeftPly);
@@ -275,83 +276,77 @@ var UI = {
         UI.timer.layer.add(UI.timer.text.turn);
         UI.timer.layer.add(UI.timer.text.player);
         UI.stageRight.add(UI.timer.layer);
-        
+
         UI.unitLeft.layer.add(UI.unitLeft.shape);
-        UI.unitLeft.layer.add(UI.unitLeft.text.name);   
-        UI.unitLeft.layer.add(UI.unitLeft.text.hp);     
-        UI.unitLeft.layer.add(UI.unitLeft.text.unitComp);   
-        UI.unitLeft.layer.add(UI.unitLeft.text.secondaryComp);  
+        UI.unitLeft.layer.add(UI.unitLeft.text.name);
+        UI.unitLeft.layer.add(UI.unitLeft.text.hp);
+        UI.unitLeft.layer.add(UI.unitLeft.text.unitComp);
+        UI.unitLeft.layer.add(UI.unitLeft.text.secondaryComp);
         UI.stageLeft.add(UI.unitLeft.layer);
-        
-        UI.unitLeft.layer.add(UI.buttonPass.shape); 
-        UI.unitLeft.layer.add(UI.buttonPass.text.label);    
+
+        UI.unitLeft.layer.add(UI.buttonPass.shape);
+        UI.unitLeft.layer.add(UI.buttonPass.text.label);
         UI.stageLeft.add(UI.buttonPass.layer);
-        
+
         UI.unitRight.layer.add(UI.unitRight.shape);
-        UI.unitRight.layer.add(UI.unitRight.text.name);     
-        UI.unitRight.layer.add(UI.unitRight.text.hp);       
-        UI.unitRight.layer.add(UI.unitRight.text.unitComp);     
+        UI.unitRight.layer.add(UI.unitRight.text.name);
+        UI.unitRight.layer.add(UI.unitRight.text.hp);
+        UI.unitRight.layer.add(UI.unitRight.text.unitComp);
         UI.unitRight.layer.add(UI.unitRight.text.secondaryComp);
         UI.stageRight.add(UI.unitRight.layer);
-        
-        UI._intervalTimer = setInterval(function(){
+
+        UI._intervalTimer = setInterval(function() {
             UI.updateTimer();
-        }, 1000);        
+        }, 1000);
     },
 
-    clear : function() {
-        
+    clear: function() {
+
     },
 
-    update : function() {
+    update: function() {
         UI.clear();
         UI.stageLeft.draw();
         UI.stageRight.draw();
     },
-    
-    setLeftUnit: function(unit, unitId){
+
+    setLeftUnit: function(unit, unitId) {
         //Get stats
-        if(unit){
-            if(unit.scient){
+        if (unit) {
+            if (unit.scient) {
                 var name = "Name: " + unit.scient.name;
                 var hp = "HP: " + GameState.HPs[unitId];
-                var unitComp = "Comp: \n" + "E:" + unit.scient.comp.Earth +  " " +
-                                "F:" + unit.scient.comp.Fire + " " +
-                                "I:" + unit.scient.comp.Ice + " " +
-                                "W:" + unit.scient.comp.Wind;
-                var weaponType = "";    
-                if(unit.scient.weapon.bow){
-                    weaponType = "Bow"; 
+                var unitComp = "Comp: \n" + "E:" + unit.scient.comp.Earth + " " + "F:" + unit.scient.comp.Fire + " " + "I:" + unit.scient.comp.Ice + " " + "W:" + unit.scient.comp.Wind;
+                var weaponType = "";
+                if (unit.scient.weapon.bow) {
+                    weaponType = "Bow";
                 }
-                if(unit.scient.weapon.glove){
-                    weaponType = "Glove";   
+                if (unit.scient.weapon.glove) {
+                    weaponType = "Glove";
                 }
-                if(unit.scient.weapon.wand){
-                    weaponType = "Wand";    
+                if (unit.scient.weapon.wand) {
+                    weaponType = "Wand";
                 }
-                if(unit.scient.weapon.sword){
-                    weaponType = "Sword";   
+                if (unit.scient.weapon.sword) {
+                    weaponType = "Sword";
                 }
-                var secondaryComp = "Weapon: " + weaponType + "\n" + "E:" + unit.scient.weapon_bonus.stone.comp.Earth + " " + 
-                                    "F:" + unit.scient.weapon_bonus.stone.comp.Fire + " " +
-                                    "I:" + unit.scient.weapon_bonus.stone.comp.Ice + " " +
-                                    "W:" + unit.scient.weapon_bonus.stone.comp.Wind;
+                var secondaryComp = "Weapon: " + weaponType + "\n" + "E:" + unit.scient.weapon_bonus.stone.comp.Earth + " " + "F:" + unit.scient.weapon_bonus.stone.comp.Fire + " " + "I:" + unit.scient.weapon_bonus.stone.comp.Ice + " " + "W:" + unit.scient.weapon_bonus.stone.comp.Wind;
             }
             unitId = GameState.getUnitIdByContents(unit);
-            if(GameState.owners[unitId] == "atkr"){
+            if (GameState.owners[unitId] == "atkr") {
                 //UI.unitLeft.shape.setFill(colors_assignment[2]);
-            }else{
+            } else {
                 //UI.unitLeft.shape.setFill(colors_assignment[1]);
             }
-        }else{
+        } else {
             var name = "";
             var hp = ""
             var unitComp = "";
             var secondaryComp = "";
-        
+
             //UI.unitLeft.shape.setFill(colors_assignment[0]);
         }
-        
+
         UI.unitLeft.text.name.setText(name);
         UI.unitLeft.text.hp.setText(hp);
         UI.unitLeft.text.unitComp.setText(unitComp);
@@ -359,50 +354,45 @@ var UI = {
         UI.unitLeft.layer.draw();
         //console.log(unit);
     },
-    
-    setRightUnit: function(unit, unitId){
+
+    setRightUnit: function(unit, unitId) {
         //Get stats
-        if(unit){
-            if(unit.scient){
+        if (unit) {
+            if (unit.scient) {
                 var name = "Name: " + unit.scient.name;
                 var hp = "HP: " + GameState.HPs[unitId];
-                var unitComp = "Comp: \n" + "E:" + unit.scient.comp.Earth +  " " +
-                                "F:" + unit.scient.comp.Fire + " " +
-                                "I:" + unit.scient.comp.Ice + " " +
-                                "W:" + unit.scient.comp.Wind;
-                var weaponType = "";    
-                if(unit.scient.weapon.bow){
-                    weaponType = "Bow"; 
+                var unitComp = "Comp: \n" + "E:" + unit.scient.comp.Earth + " " + "F:" + unit.scient.comp.Fire + " " + "I:" + unit.scient.comp.Ice + " " + "W:" + unit.scient.comp.Wind;
+                var weaponType = "";
+                if (unit.scient.weapon.bow) {
+                    weaponType = "Bow";
                 }
-                if(unit.scient.weapon.glove){
-                    weaponType = "Glove";   
+                if (unit.scient.weapon.glove) {
+                    weaponType = "Glove";
                 }
-                if(unit.scient.weapon.wand){
-                    weaponType = "Wand";    
+                if (unit.scient.weapon.wand) {
+                    weaponType = "Wand";
                 }
-                if(unit.scient.weapon.sword){
-                    weaponType = "Sword";   
+                if (unit.scient.weapon.sword) {
+                    weaponType = "Sword";
                 }
-                var secondaryComp = "Weapon: " + weaponType + "\n" + "E:" + unit.scient.weapon_bonus.stone.comp.Earth + " " + 
-                                    "F:" + unit.scient.weapon_bonus.stone.comp.Fire + " " +
-                                    "I:" + unit.scient.weapon_bonus.stone.comp.Ice + " " +
-                                    "W:" + unit.scient.weapon_bonus.stone.comp.Wind;
+                var secondaryComp = "Weapon: " + weaponType + "\n" + "E:" + unit.scient.weapon_bonus.stone.comp.Earth + " " + "F:" + unit.scient.weapon_bonus.stone.comp.Fire + " " + "I:" + unit.scient.weapon_bonus.stone.comp.Ice + " " + "W:" + unit.scient.weapon_bonus.stone.comp.Wind;
             }
             unitId = GameState.getUnitIdByContents(unit);
-            if(GameState.owners[unitId] == "atkr"){
+            if (GameState.owners[unitId] == "atkr") {
                 UI.unitRight.shape.setFill(colors_assignment[2]);
-            }else{
+            } else {
                 UI.unitRight.shape.setFill(colors_assignment[1]);
             }
-        }else{
+            //draw unitRight
+        } else {
             var name = "";
             var hp = ""
             var unitComp = "";
             var secondaryComp = "";
-        
+
             UI.unitRight.shape.setFill(colors_assignment[0]);
         }
-        
+
         UI.unitRight.text.name.setText(name);
         UI.unitRight.text.hp.setText(hp);
         UI.unitRight.text.unitComp.setText(unitComp);
@@ -410,160 +400,157 @@ var UI = {
         UI.unitRight.layer.draw();
         //console.log(unit);
     },
-    
-    setMoveable: function(x, y, targetUnit){
+
+    setMoveable: function(x, y, targetUnit) {
         //Clear all moveable tiles
-        for(var i = 0; i < 16; i++){
-            for(var j = 0; j < 16; j++){
-                if(GameState.grid.tiles[i][j].tile.contents == "movable" || GameState.grid.tiles[i][j].tile.contents == "attackable") GameState.grid.tiles[i][j].tile.contents = null;              
+        for (var i = 0; i < 16; i++) {
+            for (var j = 0; j < 16; j++) {
+                if (GameState.grid.tiles[i][j].tile.contents == "movable" || GameState.grid.tiles[i][j].tile.contents == "attackable") GameState.grid.tiles[i][j].tile.contents = null;
             }
         }
-        
+
         range = 0;
-        if(targetUnit){
+        if (targetUnit) {
             targetUnit = GameState.getUnitById(GameState.getUnitIdByName(targetUnit));
-            if(targetUnit.scient) targetUnit = targetUnit.scient;
-            if(targetUnit.nescient) targetUnit = targetUnit.nescient;
-            
+            if (targetUnit.scient) targetUnit = targetUnit.scient;
+            if (targetUnit.nescient) targetUnit = targetUnit.nescient;
+
             //TODO use defs.js battlefield object. battleField.range.indexOf(weapon) > -1;
-            if(targetUnit.weapon){
+            if (targetUnit.weapon) {
                 //DOT -- ['Glove', 'Firestorm', 'Icestorm',  'Blizzard',   'Pyrocumulus']
-                if(targetUnit.weapon.glove || targetUnit.weapon.firestorm || targetUnit.weapon.icestorm 
-                                || targetUnit.weapon.blizzard || targetUnit.weapon.pyrocumulus) range = 4;
-                                
+                if (targetUnit.weapon.glove || targetUnit.weapon.firestorm || targetUnit.weapon.icestorm || targetUnit.weapon.blizzard || targetUnit.weapon.pyrocumulus) range = 4;
+
                 //Ranged -- ['Bow',   'Magma',     'Firestorm', 'Forestfire', 'Pyrocumulus']
-                if(targetUnit.weapon.bow || targetUnit.weapon.magma || targetUnit.weapon.firestorm 
-                                || targetUnit.weapon.forestfire || targetUnit.weapon.pyrocumulus) range = 4;
-                                
+                if (targetUnit.weapon.bow || targetUnit.weapon.magma || targetUnit.weapon.firestorm || targetUnit.weapon.forestfire || targetUnit.weapon.pyrocumulus) range = 4;
+
                 //AOE -- ['Wand',  'Avalanche', 'Icestorm',  'Blizzard',   'Permafrost']
-                if(targetUnit.weapon.wand || targetUnit.weapon.avalanche || targetUnit.weapon.icestorm 
-                                || targetUnit.weapon.blizzard || targetUnit.weapon.permafrost) range = 16;
-                                
+                if (targetUnit.weapon.wand || targetUnit.weapon.avalanche || targetUnit.weapon.icestorm || targetUnit.weapon.blizzard || targetUnit.weapon.permafrost) range = 16;
+
                 //Full -- ['Sword', 'Magma', 'Avalanche', 'Forestfire', 'Permafrost']
-                if(targetUnit.weapon.sword || targetUnit.weapon.magma || targetUnit.weapon.avalanche 
-                                || targetUnit.weapon.forestfire || targetUnit.weapon.permafrost) range = 16;
+                if (targetUnit.weapon.sword || targetUnit.weapon.magma || targetUnit.weapon.avalanche || targetUnit.weapon.forestfire || targetUnit.weapon.permafrost) range = 16;
             }
-        }       
-        
-        if(range){
+        }
+
+        if (range) {
             //Fill all move tiles
-            for(var i = x - range; i <= x + range; i++){
-                for(var j = y - range; j <= y + range; j++){
-                    if(GameState.grid.tiles[i] && GameState.grid.tiles[i][j] && GameState.grid.tiles[i][j].tile.contents == null) GameState.grid.tiles[i][j].tile.contents = "movable";             
+            for (var i = x - range; i <= x + range; i++) {
+                for (var j = y - range; j <= y + range; j++) {
+                    if (GameState.grid.tiles[i] && GameState.grid.tiles[i][j] && GameState.grid.tiles[i][j].tile.contents == null) GameState.grid.tiles[i][j].tile.contents = "movable";
                 }
             }
-            
+
             //Fill all hit tiles
-            for(var i = x - (range * 2); i <= x + (range * 2); i++){
-                for(var j = y - (range * 2); j <= y + (range * 2); j++){
-                    if(GameState.grid.tiles[i] && GameState.grid.tiles[i][j] && GameState.grid.tiles[i][j].tile.contents == null) GameState.grid.tiles[i][j].tile.contents = "attackable";              
+            for (var i = x - (range * 2); i <= x + (range * 2); i++) {
+                for (var j = y - (range * 2); j <= y + (range * 2); j++) {
+                    if (GameState.grid.tiles[i] && GameState.grid.tiles[i][j] && GameState.grid.tiles[i][j].tile.contents == null) GameState.grid.tiles[i][j].tile.contents = "attackable";
                 }
             }
         }
-        
+
         Field.update();
     },
-    
-    updateTimer: function(){
-        if(GameState.start_time){
+
+    updateTimer: function() {
+        if (GameState.start_time) {
             var startTime = new Date(new Date() - new Date(GameState.start_time));
-            
-            var minutes = (startTime.getMinutes().toString().length == 1)?"0"+startTime.getMinutes():startTime.getMinutes();
-            var seconds = (startTime.getSeconds().toString().length == 1)?"0"+startTime.getSeconds():startTime.getSeconds();
-            
+
+            var minutes = (startTime.getMinutes().toString().length == 1) ? "0" + startTime.getMinutes() : startTime.getMinutes();
+            var seconds = (startTime.getSeconds().toString().length == 1) ? "0" + startTime.getSeconds() : startTime.getSeconds();
+
             var time = minutes + ":" + seconds;
-        }else{
+        } else {
             var time = "00:00";
         }
-        
-        if(GameState.time_left_battle){
+
+        if (GameState.time_left_battle) {
             var startTime = new Date(GameState.time_left_battle);
-            
-            var minutes = (startTime.getMinutes().toString().length == 1)?"0"+startTime.getMinutes():startTime.getMinutes();
-            var seconds = (startTime.getSeconds().toString().length == 1)?"0"+startTime.getSeconds():startTime.getSeconds();
-            
+
+            var minutes = (startTime.getMinutes().toString().length == 1) ? "0" + startTime.getMinutes() : startTime.getMinutes();
+            var seconds = (startTime.getSeconds().toString().length == 1) ? "0" + startTime.getSeconds() : startTime.getSeconds();
+
             var timeLeftBattle = minutes + ":" + seconds;
-        }else{
+        } else {
             var timeLeftBattle = "00:00";
         }
-        
-        if(GameState.time_left_ply){
+
+        if (GameState.time_left_ply) {
             var startTime = new Date(GameState.time_left_ply);
-            
-            var minutes = (startTime.getMinutes().toString().length == 1)?"0"+startTime.getMinutes():startTime.getMinutes();
-            var seconds = (startTime.getSeconds().toString().length == 1)?"0"+startTime.getSeconds():startTime.getSeconds();
-            
+
+            var minutes = (startTime.getMinutes().toString().length == 1) ? "0" + startTime.getMinutes() : startTime.getMinutes();
+            var seconds = (startTime.getSeconds().toString().length == 1) ? "0" + startTime.getSeconds() : startTime.getSeconds();
+
             var timeLeftPly = minutes + ":" + seconds;
-        }else{
+        } else {
             var timeLeftPly = "00:00";
         }
-        
+
         UI.timer.text.time.setText(time);
         UI.timer.text.timeLeftBattle.setText(timeLeftBattle);
         UI.timer.text.timeLeftPly.setText(timeLeftPly);
-        
+
         UI.timer.text.action.setText("Whose Action? " + GameState.whose_action);
         UI.timer.text.actionNo.setText("Action # " + GameState.action_count);
         UI.timer.text.turn.setText("Turn #" + GameState.turn_no);
         //UI.timer.text.ply.setText("Ply # " + GameState.ply_no);
         UI.timer.text.player.setText("Player: " + GameState.player);
-        
+
         UI.timer.layer.draw();
     },
-    
-    showConfirm: function(args){
+
+    showConfirm: function(args) {
         var header = args.header || "Binary Tactics";
         var message = args.message || "Are you sure?";
         UI._modalCallback = args.onconfirm;
-        
+
         //Hide login
         $('#modalConfirmHeader').innerHTML = header;
         $('#modalConfirmMessage').innerHTML = message;
-        
+
         $('#modalNo').innerHTML = 'Yes';
         $('#modalNo').innerHTML = 'No';
-        
+
         $('#modalYes').style.display = '';
         $('#modalNo').style.display = '';
         $('#modalConfirm').style.display = 'block';
     },
-    
-    showMessage: function(args){
+
+    showMessage: function(args) {
         var header = args.header || "Binary Tactics";
         var message = args.message || "Hello World.";
         UI._modalCallback = args.callback;
-        
+
         //Hide login
         $('#modalConfirmHeader').innerHTML = header;
         $('#modalConfirmMessage').innerHTML = message;
-        
+
         $('#modalNo').innerHTML = '';
         $('#modalNo').innerHTML = 'OK';
-        
+
         $('#modalYes').style.display = 'none';
         $('#modalNo').style.display = '';
         $('#modalConfirm').style.display = 'block';
     },
-    
-    modalYes: function(){
-        if(UI._modalCallback) UI._modalCallback();
+
+    modalYes: function() {
+        if (UI._modalCallback) UI._modalCallback();
         $('#modalConfirm').style.display = 'none';
     },
-    
-    modalNo: function(){
+
+    modalNo: function() {
         $('#modalConfirm').style.display = 'none';
     }
 }
 
 //Functions
+
 function authenticate() {
     //Idea--
     //Background zoomed in spinning while idle (Maybe initial titlescreen). Once clicked, login fades away, the camera zooms and spins out, then the tiles start fading to different colors (either randomly or in patterns--maybe even to music?) and displays "Authenticating...", then "Authenticating" fades and the tiles light up to the map from server.
     //$('#modalLogin').style.display = 'none';
     Services.authenticate({
-        username : $("#username").value,
-        password : $("#password").value,
-        onSuccess : function() {
+        username: $("#username").value,
+        password: $("#password").value,
+        onSuccess: function() {
             //Hide login
             $('#modalLogin').style.display = 'none';
 
@@ -572,81 +559,45 @@ function authenticate() {
             username.then(function(result) {
                 username = username.results[0];
                 GameState.player = username;
-                UI.showMessage({message: 'Welcome ' + username});
+                UI.showMessage({
+                    message: 'Welcome ' + username
+                });
             });
 
             //Get initial state
-            get_initial = Services.battle.initial_state();
-            get_initial.then(function(result) {
-                GameState.init(result);
-                //Field.update();
-                
-                if(GameState.player == "atkr"){
-                    UI.unitLeft.shape.setFill(colors_assignment[2]);
-                }else{
-                    UI.unitLeft.shape.setFill(colors_assignment[1]);
-                }
-                UI.unitLeft.layer.draw();
-                
-                var get_states = Services.battle.get_states();
-                get_states.then(function(result) {
-                    GameState.update(result[result.length - 1]);
-                    Field.update();
-                    
-                    if((GameState.ply_no % 2) === 1){
-                        GameState.whose_action = GameState.player_names[0];
-                    }else{
-                        GameState.whose_action = GameState.player_names[1];
-                    }
-                });
-                //This whole function should NOT be in the UI!
-                _intervalUpdateState = setInterval(function() {
-                    var get_states = Services.battle.get_states();
-                    get_states.then(function(result) {
-                        var num = result[result.length - 1].num + 1 //get_states returns the last state, not the current state!
-                        if(num != GameState.action_count){ //have we polled already this action?
-                            GameState.action_count  = num;
-                            if ((GameState.action_count % 2) === 1) { //does the action have an odd number?
-                                GameState.ply_no = Math.ceil(GameState.action_count / 2);
-                                if ((GameState.action_count % 4) === 1) { 
-                                    GameState.turn_no = Math.ceil(GameState.ply_no / 2);
-                                }
-                            }
-                            
-                            if(GameState.update(result[result.length - 1])) {
-                                Field.update();
-                                if((GameState.ply_no % 2) === 1) { //ply_no determines whose_action it is.
-                                    GameState.whose_action = GameState.player_names[0];
-                                }else{
-                                    GameState.whose_action = GameState.player_names[1];
-                                }
-                            };
-                        };
-                        
-                        myUnits = getUnits("mine");
-                        theirUnits = getUnits("theirs");
+            GameState.init(); //This needs to block before the if and .draw
+            /* below will work or the UI needs to draw based on the
+               properties of the battlefield object and wait for it to
+               populate before drawing, which actually makes more sense.
+            */ 
+            if (GameState.player == "atkr") {
+                UI.unitLeft.shape.setFill(colors_assignment[2]);
+            } else {
+                UI.unitLeft.shape.setFill(colors_assignment[1]);
+            }
+            UI.unitLeft.layer.draw();
+            Field.update();
 
-                        return;
-                    });
-                    
-                    var get_timeLeft = Services.battle.time_left();
-                    get_timeLeft.then(function(result) {
-                        var a = result.battle.split(':'); // split it at the colons
-                        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
-                        var t = new Date(1970,0,1);
-                        t.setSeconds(seconds);
-                        GameState.time_left_battle = t;
-                        
-                        var a = result.ply.split(':'); // split it at the colons
-                        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
-                        var t = new Date(1970,0,1);
-                        t.setSeconds(seconds);
-                        GameState.time_left_ply = t;
-                    });
-                }, 1000);
-            });
+            _intervalUpdateState = setInterval(function() {
+                GameState.update();
+                Field.update();
+                var get_timeLeft = Services.battle.time_left();
+                get_timeLeft.then(function(result) {
+                    var a = result.battle.split(':'); // split it at the colons
+                    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+                    var t = new Date(1970, 0, 1);
+                    t.setSeconds(seconds);
+                    GameState.time_left_battle = t;
+
+                    var a = result.ply.split(':'); // split it at the colons
+                    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+                    var t = new Date(1970, 0, 1);
+                    t.setSeconds(seconds);
+                    GameState.time_left_ply = t;
+                });
+            }, 1000);
         },
-        onFail : function() {
+        onFail: function() {
             alert('Authentication failed.');
         }
     });

@@ -1,9 +1,8 @@
 
 /* MAJOR BUGS
-There is no desticition in the UI between the first and second action of a ply (turn).
-The pass button does not work.
+There is no desticition in the UI between the first and second action of a ply (1/2 turn).
+The pass button is confusing.
 Players cannot target their own units.
-Whose_action is set incorrectly in btjs.js
 There is no code for hexagonal adjacency.
 The game model and the display code are not cleanly separated. 
 blocking/events UI updates in general.
