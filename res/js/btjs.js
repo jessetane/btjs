@@ -15,7 +15,7 @@ var GameState = {
     turn_no: 1,
     myUnits: undefined,
     theirUnits: undefined,
-    
+    battlefield: undefined,
 
     //This init function is bad, it should check the current state AND initial_state.
     init: function() {
@@ -36,6 +36,7 @@ var GameState = {
             for (var key in GameState.units) {
                 GameState.HPs[key] = 0;
             }
+            GameState.battlefield = new Battlefield(GameState.grid, GameState.locs, GameState.owners);
         });
         console.log("init finished.");
     },

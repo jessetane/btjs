@@ -81,13 +81,16 @@ var Services = {
         action.addCallback(function(response){
             //TODO Update Gamestage field -- (We'll get the field update on the next long poll)
             if(response.response.result){
-                var unit = GameState.getUnitById(response.response.result[0][0]);
+                var unitID = response.response.result[0][0];
+                var targetLocation = response.response.result[0][1];
+                var unit = GameState.getUnitById(unitID);
                 console.log(unit);
                 if(unit){
                     if(unit.scient){
-                        unit.scient.location = response.response.result[0][1];
+                        GameState.battlefield.move_scient(unitID, targetLocation);
+                        unit.scient.location = targetLocation;
                     }else if(unit.nescient){
-                        unit.nescient.location = response.response.result[0][1];
+                        unit.nescient.location = targetLocation;
                     }
                 }
                 UI.setLeftUnit();
@@ -119,17 +122,23 @@ var Services = {
         action.addCallback(function(response){
             //TODO Update Gamestage field -- (We'll get the field update on the next long poll)
             if(response.response.result){
+                //TODO correctly handle wand/bow attacks (use a for each).
                 UI.setLeftUnit();
                 UI.setRightUnit();
-                
                 if(response.response.result[0][1] != "Dead."){
-                    UI.showMessage({message: response.response.result[0][1] + " Damage."});
+                    var unitID = response.response.result[0][0];
+                    var amount = response.response.result[0][1];
+                    console.log("unitID: " + unitID);
+                    console.log("amount: " + amount);
+                    GameState.battlefield.apply_dmg(unitID, targetLocation);
+                    UI.showMessage({message: amount + " Damage."});
                 }else{
+                    GameState.battlefield.bury(unitID);
                     UI.showMessage({message: "Unit defeated."});
                 }
             }
             Field.update();
-            return response; 
+            return response;
         });
         
         action.addErrback(function(response){
@@ -157,6 +166,4 @@ var Services = {
             return response;
         });
     },
-    
-    battle: undefined
 }
