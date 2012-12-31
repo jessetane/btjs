@@ -1,5 +1,4 @@
 var _intervalUpdateState;
-
 var GameState = {
     grid: undefined,
     locs: undefined,
@@ -65,6 +64,7 @@ var GameState = {
                 //myUnits = getUnits("mine");
                 //theirUnits = getUnits("theirs");
                 if (state.locs) { //when is this ever false?
+                    //NOTE: THIS IS WHAT ACTUALLY CHANGES THE GAME STATE.
                     GameState.clearGridContents();
                     GameState.HPs = state.HPs;
                     GameState.updateUnitLocations(state.locs);
@@ -135,5 +135,13 @@ var GameState = {
         }
 
         return false;
+    },
+
+    print: function() {
+        console.log("userID        Loc Owner HPs");
+        for (var puserID in this.locs) {
+            console.log("\t" + puserID + ": " + this.locs[puserID] + " " + this.owners[puserID] + "\t" + this.HPs[puserID]);
+        }
     }
+
 };

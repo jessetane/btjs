@@ -1,5 +1,7 @@
 //Figuring out the best fitting include system for JS will take too long, going monolithic.
 //Lots of constructor cheating.
+var PP = JSON.stringify;
+
 var E = "Earth";
 var F = "Fire";
 var I = "Ice";
@@ -7,23 +9,27 @@ var W = "Wind";
 
 var ELEMENTS = [E, F, I, W];
 
+//Obviously copy_comp and Stone need to be one function/object.
+function copy_comp(old_comp) {
+    "use strict";
+    var new_comp = {};
+    for (var elem in old_comp) {new_comp[elem] = old_comp[elem];}
+    return new_comp;
+}
+
 function Stone(comp) {
     "use strict";
-    this.comp = {
-        "Earth": 0,
-        "Fire": 0,
-        "Ice": 0,
-        "Wind": 0
-    };
-    this.comp.Earth = comp[0];
-    this.comp.Fire = comp[1];
-    this.comp.Ice = comp[2];
-    this.comp.Wind = comp[3];
+    this.comp = {};
+    this.comp["Earth"] = comp["Earth"];
+    this.comp["Fire"] = comp["Fire"];
+    this.comp["Ice"] = comp["Ice"];
+    this.comp["Wind"] = comp["Wind"];
+    //console.log("comp coming out of Stone: " + PP(this.comp, null, 4));
 }
 
 function Unit(element, comp, name) {
     "use strict";
-    Stone.call(this, comp);
+    Stone.call(this, copy_comp(comp));
     this.element = element;
     this.name = name;
     this.setVal = function() {
@@ -49,16 +55,16 @@ function Scient(scient) {
     //Cheating with the constructor, scient takes a scient as input.
     //old constuctor: element, comp, name, loc, weapon, weapon_bonus
     var element = scient.element;
-    var comp = _.values(scient.comp);
+    //var comp = {};
+    //for (var elem in scient.comp) {comp[elem] = scient.comp[elem]};
     var name = scient.name;
-    Unit.call(this, element, comp, name, location);
+    Unit.call(this, element, copy_comp(scient.comp), name);
     this.move = 4;
     var wep = scient.weapon;
     var wep_type = _.keys(wep)[0];
     var wep_el = wep[wep_type].element;
-    var wep_comp = _.values(wep[wep_type].comp);
     //bad idea.
-    this.weapon = new window[wep_type.charAt(0).toUpperCase() + wep_type.slice(1)](wep_el, wep_comp);
+    this.weapon = new window[wep_type.charAt(0).toUpperCase() + wep_type.slice(1)](wep_el, copy_comp(wep[wep_type].comp));
     this.weapon_bonus = scient.weapon_bonus;
     this.sex = scient.sex;
     this.val = this.setVal();
@@ -68,46 +74,45 @@ function Scient(scient) {
 
 function Weapon(element, comp, wep_type) {
     "use strict";
-    Stone.call(this, comp);
+    Stone.call(this, copy_comp(comp));
     this.element = element;
     this.wep_type = wep_type;
 }
 
 function Sword(element, comp) {
     "use strict";
-    Weapon.call(this, element, comp, 'Sword');
+    Weapon.call(this, element, copy_comp(comp), 'Sword');
     this.kind = 'p';
 }
 
 function Bow(element, comp) {
     "use strict";
-    Weapon.call(this, element, comp, 'Bow');
+    Weapon.call(this, element, copy_comp(comp), 'Bow');
     this.kind = 'p';
 }
 
 function Wand(element, comp) {
     "use strict";
-    Weapon.call(this, element, comp, 'Wand');
+    Weapon.call(this, element, copy_comp(comp), 'Wand');
     this.kind = 'm';
 }
 
 function Glove(element, comp) {
     "use strict";
-    Weapon.call(this, element, comp, 'Glove');
+    Weapon.call(this, element, copy_comp(comp), 'Glove');
     this.kind = 'm';
     this.count = 3;
 }
 
 function Tile(comp, contents) {
     "use strict";
-    Stone.call(this, comp);
+    Stone.call(this, copy_comp(comp));
     this.contents = contents;
 }
 
 function Grid(grid) {
     "use strict";
-    var comp = _.values(grid.comp);
-    Stone.call(this, comp);
+    Stone.call(this, copy_comp(grid.comp));
     this.x = grid.x;
     this.y = grid.y;
     this.size = [this.x, this.y];
@@ -116,7 +121,7 @@ function Grid(grid) {
     for (var i in _.range(this.x)) {
         tiles[i] = [];
         for (var j in _.range(this.y)) {
-            var tcomp = _.values(grid.tiles[i][j].tile.comp);
+            var tcomp = copy_comp(grid.tiles[i][j].tile.comp);
             var contents = null;
             try {
                 contents = new Scient(grid.tiles[i][j].tile.contents.scient);
@@ -124,7 +129,7 @@ function Grid(grid) {
             tiles[i][j] = new Tile(tcomp, contents);
         }
     }
-    this.tiles = grid.tiles;
+    this.tiles = tiles;
 }
 JS.require('JS.Set');
 
@@ -133,6 +138,11 @@ function Battlefield(grid, init_locs, owners) {
     this.grid = new Grid(grid);
     this.locs = init_locs;
     this.owners = owners;
+    this.HPs = [];
+    for (var key in this.locs) {
+        var loc = this.locs[key];
+        this.HPs[key] = this.grid.tiles[loc[0]][loc[1]].contents.hp;
+    }
     //Should be its own function.
     var u = Services.battle.get_username();
     u.then(function() {
@@ -169,7 +179,7 @@ function Battlefield(grid, init_locs, owners) {
 
     //DUMB port from hex_battlefield.py
     this.move_scient = function(unitID, dest) {
-        //TEST ME
+        //TODO test me
         ///move unit from src tile to dest tile
         var xsrc, ysrc, xdest, ydest = undefined;
         var src = this.locs[unitID];
@@ -188,7 +198,8 @@ function Battlefield(grid, init_locs, owners) {
         if (this.grid.tiles[xsrc][ysrc].contents) {
             if (!this.grid.tiles[xdest][ydest].contents) {
                 var move = this.grid.tiles[xsrc][ysrc].contents.move;
-                if (dest in this.make_range(src, move)) {
+                var range = this.make_range(src, move);
+                if (!range.add(dest)) {
                     this.grid.tiles[xdest][ydest].contents = this.grid.tiles[xsrc][ysrc].contents;
                     this.locs[unitID] = [xdest, ydest];
                     this.grid.tiles[xsrc][ysrc].contents = null;
@@ -197,7 +208,7 @@ function Battlefield(grid, init_locs, owners) {
                     throw "tried moving more than " + move + " tiles.";
                 }
             } else {
-                throw "There is already something at" + dest + ".";
+                throw "There is already something at " + dest + ".";
             }
         } else {
             throw "There is nothing at " + src + ".";
@@ -205,15 +216,29 @@ function Battlefield(grid, init_locs, owners) {
     };
 
     this.apply_dmg = function(unitID, amount) {
+        //TODO test me
         var loc = this.locs[unitID];
-        this.grid.tiles[loc[0]][loc[1]].contents.hp += amount;
+        console.log("old HP: " + this.grid.tiles[loc[0]][loc[1]].contents.hp);
+        this.grid.tiles[loc[0]][loc[1]].contents.hp -= amount;
+        console.log("new HP: " + this.grid.tiles[loc[0]][loc[1]].contents.hp);
     };
     this.apply_queued = function() {}; //getting this right will be tricky.
     this.bury = function(unitID) {
-
+        //TODO test me
+        console.log("in bury.");
+        var loc = this.locs[unitID];
+        var scient = this.grid.tiles[loc[0]][loc[1]].contents;
+        scient.hp = 0;
+        //scient.DOD = "fix me";
+        //remove from dmg_queue
+        //append to graveyard?
+        delete this.locs[unitID];
+        delete this.HPs[unitID];
+        this.grid.tiles[loc[0]][loc[1]].contents = null;
     };
 
     this.get_adjacent = function(tile, direction) {
+        //console.log("ga_tile? " + PP(tile));
         var direction = typeof direction !== 'undefined' ? direction : 'All';
         var xpos = tile[0];
         var ypos = tile[1];
@@ -281,6 +306,7 @@ function Battlefield(grid, init_locs, owners) {
         for (idx = 0, len = directions[direction].length; idx < len; idx++) {
             var loc = directions[direction][idx];
             if (this.on_grid(loc)) {
+                console.log("ga_loc? " + PP(loc));
                 out.add(loc);
             }
         }
@@ -352,18 +378,33 @@ function Battlefield(grid, init_locs, owners) {
     };
 
     this.make_range = function(location, distance) {
-        var tilesets = [this.get_adjacent(location)];
+        var tilesets = [];
+        tilesets.push(this.get_adjacent(location));
         while (tilesets.length < distance) {
-            var tileset = tilesets.slice(-1)[0].toArray();
-            for (var t in tileset) {
-                var tile = tileset[t];
-                tilesets.push(this.get_adjacent(tile));
+            var tileset = tilesets.slice(-1)[0].entries().sort();
+            var new_tileset = new JS.Set();
+            for (var n in tileset) {
+                var tile = tileset[n];
+                new_tileset.merge(this.get_adjacent(tile));
             }
+            tilesets.push(new_tileset);
+            
         }
         var group = new JS.Set();
         for (var t in tilesets) {
-            group = group.union(tilesets[t]);
+            group = group.union(tilesets[t].entries().sort());
         }
         return group;
     };
+    
+    this.print = function() {
+        for (var key in this.locs) {
+            var loc = this.locs[key];
+            this.HPs[key] = this.grid.tiles[loc[0]][loc[1]].contents.hp;
+        }
+        console.log("userID        Loc Owner HPs");
+        for (var puserID in this.locs) {
+            console.log("\t" + puserID + ": " + this.locs[puserID] + " " + this.owners[puserID] + "\t" + this.HPs[puserID]);        }
+    };
 }
+

@@ -81,8 +81,10 @@ var Services = {
         action.addCallback(function(response){
             //TODO Update Gamestage field -- (We'll get the field update on the next long poll)
             if(response.response.result){
+                //TODO check for applied damage.
                 var unitID = response.response.result[0][0];
                 var targetLocation = response.response.result[0][1];
+                console.log("move result: " + targetLocation);
                 var unit = GameState.getUnitById(unitID);
                 console.log(unit);
                 if(unit){
@@ -123,6 +125,7 @@ var Services = {
             //TODO Update Gamestage field -- (We'll get the field update on the next long poll)
             if(response.response.result){
                 //TODO correctly handle wand/bow attacks (use a for each).
+                //TODO check for applied damage.
                 UI.setLeftUnit();
                 UI.setRightUnit();
                 if(response.response.result[0][1] != "Dead."){
@@ -130,7 +133,7 @@ var Services = {
                     var amount = response.response.result[0][1];
                     console.log("unitID: " + unitID);
                     console.log("amount: " + amount);
-                    GameState.battlefield.apply_dmg(unitID, targetLocation);
+                    GameState.battlefield.apply_dmg(unitID, amount);
                     UI.showMessage({message: amount + " Damage."});
                 }else{
                     GameState.battlefield.bury(unitID);
