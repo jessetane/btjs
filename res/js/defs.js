@@ -132,7 +132,6 @@ function Grid(grid) {
     this.tiles = tiles;
 }
 JS.require('JS.Set');
-
 function Battlefield(grid, init_locs, owners) {
     "use strict";
     this.grid = new Grid(grid);
@@ -216,11 +215,8 @@ function Battlefield(grid, init_locs, owners) {
     };
 
     this.apply_dmg = function(unitID, amount) {
-        //TODO test me
         var loc = this.locs[unitID];
-        console.log("old HP: " + this.grid.tiles[loc[0]][loc[1]].contents.hp);
         this.grid.tiles[loc[0]][loc[1]].contents.hp -= amount;
-        console.log("new HP: " + this.grid.tiles[loc[0]][loc[1]].contents.hp);
     };
     this.apply_queued = function() {}; //getting this right will be tricky.
     this.bury = function(unitID) {
@@ -238,7 +234,6 @@ function Battlefield(grid, init_locs, owners) {
     };
 
     this.get_adjacent = function(tile, direction) {
-        //console.log("ga_tile? " + PP(tile));
         var direction = typeof direction !== 'undefined' ? direction : 'All';
         var xpos = tile[0];
         var ypos = tile[1];
@@ -306,13 +301,11 @@ function Battlefield(grid, init_locs, owners) {
         for (idx = 0, len = directions[direction].length; idx < len; idx++) {
             var loc = directions[direction][idx];
             if (this.on_grid(loc)) {
-                console.log("ga_loc? " + PP(loc));
                 out.add(loc);
             }
         }
         return out;
     };
-    //Scient operations
     //Nescient operations
     this.make_parts = function() {};
     this.make_body = function() {};
@@ -388,7 +381,6 @@ function Battlefield(grid, init_locs, owners) {
                 new_tileset.merge(this.get_adjacent(tile));
             }
             tilesets.push(new_tileset);
-            
         }
         var group = new JS.Set();
         for (var t in tilesets) {
@@ -407,4 +399,20 @@ function Battlefield(grid, init_locs, owners) {
             console.log("\t" + puserID + ": " + this.locs[puserID] + " " + this.owners[puserID] + "\t" + this.HPs[puserID]);        }
     };
 }
-
+//I don't understand javascript at all.
+var Game = {
+    last_last_result: undefined,
+    last_result: undefined,
+    
+    update: function() {
+        var response = Services.battle.last_result();
+        response.then(function(result){
+            
+            if (!_.isEqual(result, Game.last_result)) {
+                console.log(PP(result));
+                Game.last_last_result = Game.last_result;
+                Game.last_result = result;
+            }
+        });
+    }
+};

@@ -565,6 +565,7 @@ function authenticate() {
             });
 
             //Get initial state
+            //game = new Game();
             GameState.init(); //This needs to block before the if and .draw
             /* below will work or the UI needs to draw based on the
                properties of the battlefield object and wait for it to
@@ -580,6 +581,7 @@ function authenticate() {
 
             _intervalUpdateState = setInterval(function() {
                 GameState.update();
+                Game.update();
                 Field.update();
                 var get_timeLeft = Services.battle.time_left();
                 get_timeLeft.then(function(result) {
