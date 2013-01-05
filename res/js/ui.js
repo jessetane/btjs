@@ -262,7 +262,7 @@ var UI = {
                 header: "Pass",
                 message: "Are you sure?",
                 onconfirm: function() {
-                    Services.pass();
+                    GameState.pass();
                 }
             });
         });

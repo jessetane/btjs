@@ -207,7 +207,7 @@ var Field = {
                             header: "Action",
                             message: "Attack unit?",
                             onconfirm: function() {
-                                Services.attack({
+                                GameState.attack({
                                     unitID: GameState.getUnitIdByName(selectedPlayer),
                                     targetLocation: [index[0], index[1]] // GameState.getUnitIdByLocation(index[0], index[1]) //
                                 });
@@ -228,7 +228,7 @@ var Field = {
                         header: "Action",
                         message: "Move unit?",
                         onconfirm: function() {
-                            Services.move({
+                            GameState.move({
                                 unitID: GameState.getUnitIdByName(selectedPlayer),
                                 targetLocation: [index[0], index[1]]
                             });
