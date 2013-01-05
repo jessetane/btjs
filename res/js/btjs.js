@@ -19,9 +19,9 @@ var GameState = {
     //This init function is bad, it should check the current state AND initial_state.
     init: function(cb) {
         // get username
-        var get_username = Services.battle.get_username();
-        get_username.then(function(res) {
-            GameState.player = get_username.res[0];
+        var getUsername = Services.battle.get_username();
+        getUsername.then(function(res) {
+            GameState.player = res[0];
             
             // get initial state
             var getInitialState = Services.battle.initial_state();
