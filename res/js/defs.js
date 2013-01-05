@@ -142,11 +142,7 @@ function Battlefield(grid, init_locs, owners) {
         var loc = this.locs[key];
         this.HPs[key] = this.grid.tiles[loc[0]][loc[1]].contents.hp;
     }
-    //Should be its own function.
-    var u = Services.battle.get_username();
-    u.then(function() {
-        this.username = u.results[0];
-    });
+
     this.graveyard = [];
     this.dmg_queue = {};
     this.direction = {
