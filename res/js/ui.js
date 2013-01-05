@@ -266,7 +266,7 @@ var UI = {
                     
                     // show
                     UI.showMessage({
-                        message: 'Welcome ' + GameState.player;
+                        message: 'Welcome ' + GameState.player
                     });
                 
                     //
