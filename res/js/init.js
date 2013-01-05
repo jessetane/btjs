@@ -33,6 +33,14 @@ Element.prototype.$$ = function (selector) {
 var selectedPlayer = undefined; //TODO: Where to put this?
 
 function init() {
+    dojo.require("dijit.Tooltip");
+    dojo.require("dojox.rpc.Service");
+    dojo.require("dojox.rpc.JsonRPC");
+    dojo.require("dojo.store.Memory");
+    dojo.ready(function(){
+        Services.battle = new dojox.rpc.Service("http://" + HOST + ":8888/battle/static/battle.smd");
+    });
+    
     Field.init();
     UI.init();
     resizeCanvas();
