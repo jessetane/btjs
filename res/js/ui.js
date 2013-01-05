@@ -243,7 +243,7 @@ var UI = {
             })
         }
     },
-
+    
     authenticate: function() {
         //Idea--
         //Background zoomed in spinning while idle (Maybe initial titlescreen). Once clicked, login fades away, the camera zooms and spins out, then the tiles start fading to different colors (either randomly or in patterns--maybe even to music?) and displays "Authenticating...", then "Authenticating" fades and the tiles light up to the map from server.
@@ -255,50 +255,50 @@ var UI = {
                 //Hide login
                 $('#modalLogin').style.display = 'none';
 
-                //Get username
-                username = Services.battle.get_username();
-                username.then(function(result) {
-                    username = username.results[0];
-                    GameState.player = username;
-                    UI.showMessage({
-                        message: 'Welcome ' + username
-                    });
-                });
-
                 //Get initial state
                 //game = new Game();
-                GameState.init(); //This needs to block before the if and .draw
+                //This needs to block before the if and .draw
                 /* below will work or the UI needs to draw based on the
                    properties of the battlefield object and wait for it to
                    populate before drawing, which actually makes more sense.
-                */ 
-                if (GameState.player == "atkr") {
-                    UI.unitLeft.shape.setFill(colors_assignment[2]);
-                } else {
-                    UI.unitLeft.shape.setFill(colors_assignment[1]);
-                }
-                UI.unitLeft.layer.draw();
-                Field.update();
-
-                _intervalUpdateState = setInterval(function() {
-                    GameState.update();
-                    Game.update();
-                    Field.update();
-                    var get_timeLeft = Services.battle.time_left();
-                    get_timeLeft.then(function(result) {
-                        var a = result.battle.split(':'); // split it at the colons
-                        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-                        var t = new Date(1970, 0, 1);
-                        t.setSeconds(seconds);
-                        GameState.time_left_battle = t;
-
-                        var a = result.ply.split(':'); // split it at the colons
-                        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-                        var t = new Date(1970, 0, 1);
-                        t.setSeconds(seconds);
-                        GameState.time_left_ply = t;
+                */
+                GameState.init(function () {
+                    
+                    // show
+                    UI.showMessage({
+                        message: 'Welcome ' + GameState.player;
                     });
-                }, 1000);
+                
+                    //
+                    if (GameState.player == "atkr") {
+                        UI.unitLeft.shape.setFill(colors_assignment[2]);
+                    } else {
+                        UI.unitLeft.shape.setFill(colors_assignment[1]);
+                    }
+                    UI.unitLeft.layer.draw();
+                    Field.update();
+                    
+                    // start updating
+                    _intervalUpdateState = setInterval(function() {
+                        GameState.update();
+                        Game.update();
+                        Field.update();
+                        var get_timeLeft = Services.battle.time_left();
+                        get_timeLeft.then(function(result) {
+                            var a = result.battle.split(':'); // split it at the colons
+                            var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+                            var t = new Date(1970, 0, 1);
+                            t.setSeconds(seconds);
+                            GameState.time_left_battle = t;
+
+                            var a = result.ply.split(':'); // split it at the colons
+                            var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+                            var t = new Date(1970, 0, 1);
+                            t.setSeconds(seconds);
+                            GameState.time_left_ply = t;
+                        });
+                    }, 1000);
+                });
             },
             onFail: function() {
                 alert('Authentication failed.');

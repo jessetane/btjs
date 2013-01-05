@@ -17,27 +17,37 @@ var GameState = {
     battlefield: undefined,
 
     //This init function is bad, it should check the current state AND initial_state.
-    init: function() {
-        this.gi = Services.battle.initial_state();
-        this.gi.then(function(res) {
-            //scope?
-            GameState.init_state = res.initial_state;
-            GameState.grid = res.initial_state.grid.grid;
-            GameState.locs = res.initial_state.init_locs;
-            GameState.owners = res.initial_state.owners;
-            GameState.start_time = res.initial_state.start_time;
-            GameState.units = res.initial_state.units;
-            GameState.player_names = res.initial_state.player_names;
-            GameState.whose_action = GameState.player_names[0];
+    init: function(cb) {
+        // get username
+        var get_username = Services.battle.get_username();
+        get_username.then(function(res) {
+            GameState.player = get_username.res[0];
+            
+            // get initial state
+            var getInitialState = Services.battle.initial_state();
+            getInitialState.then(function(res) {
+                
+                //scope?
+                GameState.init_state = res.initial_state;
+                GameState.grid = res.initial_state.grid.grid;
+                GameState.locs = res.initial_state.init_locs;
+                GameState.owners = res.initial_state.owners;
+                GameState.start_time = res.initial_state.start_time;
+                GameState.units = res.initial_state.units;
+                GameState.player_names = res.initial_state.player_names;
+                GameState.whose_action = GameState.player_names[0];
 
-            //TODO Calculate HPs
-            GameState.HPs = [];
-            for (var key in GameState.units) {
-                GameState.HPs[key] = 0;
-            }
-            GameState.battlefield = new Battlefield(GameState.grid, GameState.locs, GameState.owners);
+                //TODO Calculate HPs
+                GameState.HPs = [];
+                for (var key in GameState.units) {
+                    GameState.HPs[key] = 0;
+                }
+                GameState.battlefield = new Battlefield(GameState.grid, GameState.locs, GameState.owners);
+                
+                // execute callback
+                cb()
+            });
         });
-        console.log("init finished.");
     },
     update: function() {
         var last_state = Services.battle.get_last_state();
