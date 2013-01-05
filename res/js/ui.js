@@ -281,7 +281,7 @@ var UI = {
                     // start updating
                     _intervalUpdateState = setInterval(function() {
                         GameState.update();
-                        Game.update();
+                        //Game.update();
                         Field.update();
                         var get_timeLeft = Services.battle.time_left();
                         get_timeLeft.then(function(result) {
