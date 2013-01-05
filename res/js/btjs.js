@@ -20,8 +20,8 @@ var GameState = {
     init: function(cb) {
         // get username
         var getUsername = Services.battle.get_username();
-        getUsername.then(function(res) {
-            GameState.player = res[0];
+        getUsername.then(function(username) {
+            GameState.player = username;
             
             // get initial state
             var getInitialState = Services.battle.initial_state();
