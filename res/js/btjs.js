@@ -15,6 +15,8 @@ var GameState = {
     myUnits: undefined,
     theirUnits: undefined,
     battlefield: undefined,
+    last_result: { num: 0 },
+    last_last_result: { num: 0 },
 
     //This init function is bad, it should check the current state AND initial_state.
     init: function(cb) {
@@ -49,43 +51,108 @@ var GameState = {
             });
         });
     },
+    
     update: function() {
+        var response = Services.battle.last_result();
+        response.then(GameState.processActionResult);
+    },
+    
+    processActionResult: function (result) {
+        
+        // ensure we have a result
+        if (result) {
+            
+            // has the result changed?
+            if (!_.isEqual(result, GameState.last_result)) {
+            
+                // debug
+                //console.log(PP(result));
+            
+                // have any results been missed?
+                if (result.num === GameState.last_last_result.num + 1) {
+                    
+                    // if not, just apply the result itself
+                    GameState.applyResults(result);
+                    GameState.updateActionNumber(result.num);
+                    
+                } else {
+                    
+                    // process state because we missed some results
+                    GameState.updateState();
+                }
+            
+                // pesist results
+                GameState.last_last_result = GameState.last_result;
+                GameState.last_result = result;
+            }
+        }
+    },
+    
+    applyResults: function (result) {
+        var cmd = result.command;
+        var res = result.response;
+        var type = cmd.type;
+        
+        // check for applied damage
+        if (result.applied) {
+            apply_dmgs(result.applied);
+        }
+        
+        // update results
+        if (type == "move") {
+            Battlefield.move_scient(cmd.unit, cmd.target)
+        } else if (type == "attack") {
+            apply_dmgs(res.result)
+        }
+        
+        function apply_dmgs (damages) {
+            for (var d in damages) {
+                var damage = damages[d];
+                Battlefield.apply_dmg(damage[0], damage[1]);
+            }
+        }
+    },
+    
+    updateActionNumber: function (num) {
+        GameState.action_count = num;
+        if ((GameState.action_count % 2) === 1) { //does the action have an odd number?
+            GameState.ply_no = Math.ceil(GameState.action_count / 2);
+            if ((GameState.action_count % 4) === 1) {
+                GameState.turn_no = Math.ceil(GameState.ply_no / 2);
+            }
+        }
+        if ((GameState.ply_no % 2) === 1) { //ply_no determines whose_action it is.
+            GameState.whose_action = GameState.player_names[0];
+        } else {
+            GameState.whose_action = GameState.player_names[1];
+        }
+    },
+    
+    updateState: function () {
+        
+        // TODO: 
+        // if so request the missing results and apply them
+            // GameState.applyResults(result)
+            // GameState.updateActionNumber(result.num)  
+        
         var last_state = Services.battle.get_last_state();
         var state = undefined;
         last_state.then(function(state) {
             if (state != null) { //Catches the first turn when there is no last_state.
-                var num = state.num + 1; //The last_state is not the current state!
-                if (num != GameState.action_count) { //have we polled already this action?
-                    GameState.action_count = num;
-                    if ((GameState.action_count % 2) === 1) { //does the action have an odd number?
-                        GameState.ply_no = Math.ceil(GameState.action_count / 2);
-                        if ((GameState.action_count % 4) === 1) {
-                            GameState.turn_no = Math.ceil(GameState.ply_no / 2);
-                        }
-                    }
-                    if ((GameState.ply_no % 2) === 1) { //ply_no determines whose_action it is.
-                        GameState.whose_action = GameState.player_names[0];
-                    } else {
-                        GameState.whose_action = GameState.player_names[1];
-                    }
-                }
-
-                //It's real in these streets mane.
-                //myUnits = getUnits("mine");
-                //theirUnits = getUnits("theirs");
                 if (state.locs) { //when is this ever false?
                     //NOTE: THIS IS WHAT ACTUALLY CHANGES THE GAME STATE.
                     GameState.clearGridContents();
                     GameState.HPs = state.HPs;
                     GameState.updateUnitLocations(state.locs);
-
                 } else {
                     console.log("GameState.update is false.");
                     //return true;
                 }
             }
+            GameState.updateActionNumber(state.num + 1);
         });
     },
+    
     clearGridContents: function() {
         for (var x in this.grid.tiles) {
             for (var y in this.grid.tiles[x]) {
@@ -94,6 +161,7 @@ var GameState = {
             }
         }
     },
+    
     updateUnitLocations: function(locs) {
         var change = false;
         for (var l in locs) {
@@ -153,9 +221,6 @@ var GameState = {
             console.log("\t" + puserID + ": " + this.locs[puserID] + " " + this.owners[puserID] + "\t" + this.HPs[puserID]);
         }
     },
-    
-    
-    //// from services.js
     
     move: function(args){
         var type = "move";

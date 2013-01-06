@@ -395,27 +395,3 @@ function Battlefield(grid, init_locs, owners) {
             console.log("\t" + puserID + ": " + this.locs[puserID] + " " + this.owners[puserID] + "\t" + this.HPs[puserID]);        }
     };
 }
-//I don't understand javascript at all.
-var Game = {
-    last_last_result: undefined,
-    last_result: undefined,
-    
-    update: function() {
-        var response = Services.battle.last_result();
-        response.then(function(result){
-            if (!_.isEqual(result, Game.last_result)) {
-                console.log(PP(result));
-                var command_type = result.command.type;
-                if (command_type == "move") {
-                    
-                }
-                if (command_type == "attack") {
-                    
-                }
-                Game.last_last_result = Game.last_result;
-                Game.last_result = result;
-                
-            }
-        });
-    }
-};
