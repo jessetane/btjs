@@ -41,8 +41,10 @@ function init() {
         Services.battle = new dojox.rpc.Service("http://" + HOST + ":8888/battle/static/battle.smd");
     });
     
+    authService = new AuthService();
+    ui = new UI();
+    
     Field.init();
-    UI.init();
     resizeCanvas();
 }
 

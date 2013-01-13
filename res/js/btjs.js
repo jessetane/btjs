@@ -47,7 +47,7 @@ var GameState = {
                 GameState.battlefield = new Battlefield(GameState.grid, GameState.locs, GameState.owners);
                 
                 // execute callback
-                cb()
+                cb();
             });
         });
     },
