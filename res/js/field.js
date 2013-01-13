@@ -187,7 +187,7 @@ var Field = {
         if (unitId) { //If unit is at location
             //Check Owner
             if (GameState.owners[unitId] == GameState.player) {
-                UI.setLeftUnit(GameState.units[unitId], unitId);
+                ui.setLeftUnit(GameState.units[unitId], unitId);
                 //Context Menus Will Go Here
                 //Select player
                 selectedPlayer = undefined;
@@ -196,14 +196,14 @@ var Field = {
                 } else {
                     selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.nescient.name;
                 }
-                UI.setMoveable(index[0], index[1], selectedPlayer);
+                ui.setMoveable(index[0], index[1], selectedPlayer);
             } else {
-                //UI.setRightUnit(GameState.units[unitId]);
+                //ui.setRightUnit(GameState.units[unitId]);
                 //Context Menus Will Go Here
                 if (selectedPlayer) {
                     //TODO: SHOW ACTION CONFIRM
                     if (GameState.whose_turn == GameState.player || 1 == 1) {
-                        UI.showConfirm({
+                        ui.showConfirm({
                             header: "Action",
                             message: "Attack unit?",
                             onconfirm: function() {
@@ -212,8 +212,8 @@ var Field = {
                                     targetLocation: [index[0], index[1]] // GameState.getUnitIdByLocation(index[0], index[1]) //
                                 });
                                 selectedPlayer = undefined;
-                                UI.setMoveable(index[0], index[1], selectedPlayer);
-                                UI.setLeftUnit();
+                                ui.setMoveable(index[0], index[1], selectedPlayer);
+                                ui.setLeftUnit();
                             }
                         });
                     } else {
@@ -224,7 +224,7 @@ var Field = {
         } else {
             if (selectedPlayer) {
                 if (GameState.whose_turn == GameState.player || 1 == 1) {
-                    UI.showConfirm({
+                    ui.showConfirm({
                         header: "Action",
                         message: "Move unit?",
                         onconfirm: function() {
@@ -232,7 +232,7 @@ var Field = {
                                 unitID: GameState.getUnitIdByName(selectedPlayer),
                                 targetLocation: [index[0], index[1]]
                             });
-                            UI.setLeftUnit();
+                            ui.setLeftUnit();
                         }
                     });
                 } else {
@@ -247,19 +247,19 @@ var Field = {
         if (unitId) { //If unit is at location
             //Check Owner
             if (GameState.owners[unitId] != GameState.player) {
-                UI.setRightUnit(GameState.units[unitId], unitId);
+                ui.setRightUnit(GameState.units[unitId], unitId);
                 //Context Menus Will Go Here
             } else {
-                UI.setRightUnit();
-                //UI.setRightUnit(GameState.units[unitId]);
+                ui.setRightUnit();
+                //ui.setRightUnit(GameState.units[unitId]);
                 //Context Menus Will Go Here
             }
         } else {
-            UI.setRightUnit();
+            ui.setRightUnit();
         }
     }
 
     // Field.onTileOver = function(index, position){
-    //  UI.showTileIndicator(position[0], position[1]);
+    //  ui.showTileIndicator(position[0], position[1]);
     // }
 }
