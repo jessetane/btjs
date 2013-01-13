@@ -56,7 +56,7 @@ var GameState = {
         var response = battleService.last_result();
         response.then(GameState.processActionResult);
         
-        var get_timeLeft = GameState.service.time_left();
+        var get_timeLeft = battleService.time_left();
         get_timeLeft.then(function(result) {
             var a = result.battle.split(':'); // split it at the colons
             var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
@@ -267,15 +267,15 @@ var GameState = {
                         unit.nescient.location = targetLocation;
                     }
                 }
-                UI.setLeftUnit();
-                UI.setRightUnit();
+                ui.setLeftUnit();
+                ui.setRightUnit();
             }
             Field.update();
             return response; 
         });
         
         action.addErrback(function(response){
-            UI.showMessage({message: response});
+            ui.showMessage({message: response});
             return response;
         });
     },
@@ -298,18 +298,18 @@ var GameState = {
             if(response.response.result){
                 //TODO correctly handle wand/bow attacks (use a for each).
                 //TODO check for applied damage.
-                UI.setLeftUnit();
-                UI.setRightUnit();
+                ui.setLeftUnit();
+                ui.setRightUnit();
                 if(response.response.result[0][1] != "Dead."){
                     var unitID = response.response.result[0][0];
                     var amount = response.response.result[0][1];
                     console.log("unitID: " + unitID);
                     console.log("amount: " + amount);
                     GameState.battlefield.apply_dmg(unitID, amount);
-                    UI.showMessage({message: amount + " Damage."});
+                    ui.showMessage({message: amount + " Damage."});
                 }else{
                     GameState.battlefield.bury(unitID);
-                    UI.showMessage({message: "Unit defeated."});
+                    ui.showMessage({message: "Unit defeated."});
                 }
             }
             Field.update();
@@ -317,7 +317,7 @@ var GameState = {
         });
         
         action.addErrback(function(response){
-            UI.showMessage({message: response});
+            ui.showMessage({message: response});
             return response;
         });
     },
@@ -332,12 +332,12 @@ var GameState = {
         ]);
         
         action.addCallback(function(response){
-            UI.showMessage({message: "You have passed for one action."});
+            ui.showMessage({message: "You have passed for one action."});
             return response; 
         });
         
         action.addErrback(function(response){
-            UI.showMessage({message: response});
+            ui.showMessage({message: response});
             return response;
         });
     }
