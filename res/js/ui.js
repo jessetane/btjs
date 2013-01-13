@@ -260,9 +260,9 @@ function UI() {
         });
     });
     
-    $('#authenticate').onclick(this.authenticate.bind(this));
-    $('#modalYes').onclick(this.modalYes.bind(this));
-    $('#modalNo').onclick(this.modalNo.bind(this));
+    $('#authenticate').onclick = this.authenticate.bind(this);
+    $('#modalYes').onclick = this.modalYes.bind(this);
+    $('#modalNo').onclick = this.modalNo.bind(this);
     
     this.timer.layer.add(this.timer.text.time);
     this.timer.layer.add(this.timer.text.timeLeftBattle);
