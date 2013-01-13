@@ -37,13 +37,16 @@ function init() {
     dojo.require("dojox.rpc.Service");
     dojo.require("dojox.rpc.JsonRPC");
     dojo.require("dojo.store.Memory");
-    dojo.ready(function(){
-        Services.battle = new dojox.rpc.Service("http://" + HOST + ":8888/battle/static/battle.smd");
+    dojo.ready(function() {
+        battleService = new dojox.rpc.Service("http://" + HOST + ":8888/battle/static/battle.smd");
     });
     
+    // API endpoints - these will be global for now
+    battleService = null;
     authService = new AuthService();
-    ui = new UI();
     
+    //
+    ui = new UI();
     Field.init();
     resizeCanvas();
 }

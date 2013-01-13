@@ -332,22 +332,7 @@ UI.prototype.authenticate = function() {
                 // start updating
                 _intervalUpdateState = setInterval(function() {
                     GameState.update();
-                    //Game.update();
                     Field.update();
-                    var get_timeLeft = Services.battle.time_left();
-                    get_timeLeft.then(function(result) {
-                        var a = result.battle.split(':'); // split it at the colons
-                        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-                        var t = new Date(1970, 0, 1);
-                        t.setSeconds(seconds);
-                        GameState.time_left_battle = t;
-
-                        var a = result.ply.split(':'); // split it at the colons
-                        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-                        var t = new Date(1970, 0, 1);
-                        t.setSeconds(seconds);
-                        GameState.time_left_ply = t;
-                    });
                 }, 1000);
             });
         },

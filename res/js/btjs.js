@@ -21,12 +21,12 @@ var GameState = {
     //This init function is bad, it should check the current state AND initial_state.
     init: function(cb) {
         // get username
-        var getUsername = Services.battle.get_username();
+        var getUsername = battleService.get_username();
         getUsername.then(function(username) {
             GameState.player = username;
             
             // get initial state
-            var getInitialState = Services.battle.initial_state();
+            var getInitialState = battleService.initial_state();
             getInitialState.then(function(res) {
                 
                 //scope?
@@ -53,8 +53,23 @@ var GameState = {
     },
     
     update: function() {
-        var response = Services.battle.last_result();
+        var response = battleService.last_result();
         response.then(GameState.processActionResult);
+        
+        var get_timeLeft = GameState.service.time_left();
+        get_timeLeft.then(function(result) {
+            var a = result.battle.split(':'); // split it at the colons
+            var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+            var t = new Date(1970, 0, 1);
+            t.setSeconds(seconds);
+            GameState.time_left_battle = t;
+
+            var a = result.ply.split(':'); // split it at the colons
+            var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+            var t = new Date(1970, 0, 1);
+            t.setSeconds(seconds);
+            GameState.time_left_ply = t;
+        });
     },
     
     processActionResult: function (result) {
@@ -135,7 +150,7 @@ var GameState = {
             // GameState.applyResults(result)
             // GameState.updateActionNumber(result.num)  
         
-        var last_state = Services.battle.get_last_state();
+        var last_state = battleService.get_last_state();
         var state = undefined;
         last_state.then(function(state) {
             if (state != null) { //Catches the first turn when there is no last_state.
@@ -228,8 +243,8 @@ var GameState = {
         var targetLocation = args.targetLocation || [0,0];
         
         //Example 
-        //Services.battle.process_action(["48632008", "move", [2, 2]])
-        var action = Services.battle.process_action([
+        //battleService.process_action(["48632008", "move", [2, 2]])
+        var action = battleService.process_action([
             unitID, //Unit
             type, //Type
             targetLocation //Target
@@ -271,8 +286,8 @@ var GameState = {
         var targetLocation = args.targetLocation || [0,0];
         
         //Example???
-        //Services.battle.process_action(["48632008", "attack", [2, 2]])
-        var action = Services.battle.process_action([
+        //battleService.process_action(["48632008", "attack", [2, 2]])
+        var action = battleService.process_action([
             unitID, //Unit
             type, //Type
             targetLocation //Target
@@ -310,7 +325,7 @@ var GameState = {
     pass: function(args){
         var type = "pass";
         
-        var action = Services.battle.process_action([
+        var action = battleService.process_action([
             null,
             type, //Type
             null
