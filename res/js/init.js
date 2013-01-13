@@ -54,7 +54,7 @@ function resizeCanvas() {
     $(".shell").style.width = newWidth;
     $(".shell").style.height = newHeight;
     Field.setSize(newWidth, newHeight);
-    UI.setSize(200, newHeight);
+    ui.setSize(200, newHeight);
 }
 
 window.addEventListener('resize', resizeCanvas, false);
