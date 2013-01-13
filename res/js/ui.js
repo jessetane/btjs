@@ -292,7 +292,7 @@ function UI() {
     this._intervalTimer = setInterval(function() {
         self.updateTimer();
     }, 1000);
-}
+};
 
 UI.prototype.authenticate = function() {
     //Idea--
