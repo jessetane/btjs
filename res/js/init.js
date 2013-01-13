@@ -46,8 +46,8 @@ function init() {
     authService = new AuthService();
     
     //
-    ui = new UI();
     Field.init();
+    ui = new UI();
     resizeCanvas();
 }
 

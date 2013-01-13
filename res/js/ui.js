@@ -243,7 +243,7 @@ function UI() {
         width: 200,
         height: 768
     });
-
+    
     this.stageRight = new Kinetic.Stage({
         container: "ui-right",
         width: 200,
