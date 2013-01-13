@@ -1,11 +1,6 @@
 //Should we use canvas or DOM?
 function UI() {
 
-    var self = this;
-  
-    this._intervalTimer = undefined;
-    this._modalCallback = undefined;
-
     this.unitLeft = {
         layer: new Kinetic.Layer(),
         shape: new Kinetic.RegularPolygon({
@@ -238,6 +233,10 @@ function UI() {
     };
   
     ///////
+    
+    var self = this;
+    this._intervalTimer = undefined;
+    this._modalCallback = undefined;
   
     this.stageLeft = new Kinetic.Stage({
         container: "ui-left",
@@ -260,6 +259,10 @@ function UI() {
             }
         });
     });
+    
+    $('#authenticate').on('click', this.authenticate.bind(this));
+    $('#modalYes').on('click', this.modalYes.bind(this));
+    $('#modalNo').on('click', this.modalNo.bind(this));
 
     this.timer.layer.add(this.timer.text.time);
     this.timer.layer.add(this.timer.text.timeLeftBattle);
