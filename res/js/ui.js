@@ -260,10 +260,10 @@ function UI() {
         });
     });
     
-    $('#authenticate').on('click', this.authenticate.bind(this));
-    $('#modalYes').on('click', this.modalYes.bind(this));
-    $('#modalNo').on('click', this.modalNo.bind(this));
-
+    $('#authenticate').onclick(this.authenticate.bind(this));
+    $('#modalYes').onclick(this.modalYes.bind(this));
+    $('#modalNo').onclick(this.modalNo.bind(this));
+    
     this.timer.layer.add(this.timer.text.time);
     this.timer.layer.add(this.timer.text.timeLeftBattle);
     this.timer.layer.add(this.timer.text.timeLeftPly);
