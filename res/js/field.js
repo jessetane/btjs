@@ -1,19 +1,18 @@
 var Field = {
 
     stage: undefined,
-
     scale: 25,
+    tileLayer: new Kinetic.Layer(),
+    tiles: [],
+    indicatorLayer: new Kinetic.Layer(),
+    indicator: undefined,
+    attackable: null,
+    movable: null,
 
     setSize: function(width, height) {
         Field.stage.setSize(width, height);
         Field.update();
     },
-
-    tileLayer: new Kinetic.Layer(),
-    tiles: [],
-
-    indicatorLayer: new Kinetic.Layer(),
-    indicator: undefined,
 
     init: function() {
         Field.stage = new Kinetic.Stage({
@@ -46,7 +45,9 @@ var Field = {
         });
 
         Field.indicator.on("click", function() {
-            if (Field.indicator.tileIndex && Field.onTileClick) Field.onTileClick.apply(Field.indicator, [Field.indicator.tileIndex]);
+            if (Field.indicator.tileIndex) {
+                Field.onTileClick.apply(Field, [ Field.indicator.tileIndex ]);
+            }
         });
 
         Field.indicator.on("mouseout", function() {
@@ -65,70 +66,88 @@ var Field = {
 
     update: function() {
         Field.clear();
-
-        var trig = {
-            a: Math.sqrt(3) / 2,
-            b: 1 / 2,
-            c: 1
-        };
-
-        var width = 33 * trig.a;
-        var height = (17 * trig.b) + 16;
         var tiles = Field.tiles;
 
         for (var i = 0; i < 16; i++) {
             tiles[i] = [];
             for (var j = 0; j < 16; j++) {
-                var x = (i * (2 * trig.a)) + ((j % 2) * trig.a);
-                var y = (j * (3 * trig.b));
-                tiles[i][j] = new Field.Tile([i, j], [(x + (1 - width / 2)), (y + (1 - height / 2))]);
+                var tile = new Field.FieldTile([i, j]);
+                var tileSet = new JS.Set([ tile.index ]);
+                tiles[i][j] = tile;
                 Field.tileLayer.add(tiles[i][j].shapes);
-                //var o = occupancy[i + (j * 16)];
-                if (GameState.grid && GameState.grid.tiles[i][j].tile.contents != null) {
-                    if (GameState.getUnitIdByContents(GameState.grid.tiles[i][j].tile.contents)) {
-                        var unitId = GameState.getUnitIdByContents(GameState.grid.tiles[i][j].tile.contents)
-                        if (GameState.units[unitId].scient) o = 1;
-                        if (GameState.units[unitId].nescient) o = 2;
-                        if (GameState.owners[unitId] == "atkr") o += 6;
-                    } else {
-                        switch (GameState.grid.tiles[i][j].tile.contents) {
-                        case 'movable':
-                            o = 104;
-                            break;
-                        case 'attackable':
-                            o = 103;
-                            break;
-                        default:
-                            o = 0;
-                            break;
+                
+                // first just make sure every tile is gray
+                tile.setForegroundColor(colors.dark_gray);
+                tile.setBackgroundColor(colors.gray);
+                
+                if (GameState.battlefield) {
+                    var owner = GameState.battlefield.getUnitOwnerByLocation([i, j]);
+                    var unit = GameState.battlefield.getUnitByLocation([i, j]);
+                    
+                    // do we have a unit?
+                    if (owner) {
+                        
+                        // are we the owner?
+                        if (owner === GameState.player) {
+                            
+                            // check to see if it is the selected unit
+                            if (unit === ui.selectedUnit) {
+                                
+                                // color it light red
+                                tile.setForegroundColor(colors.dark_red);
+                                tile.setBackgroundColor(colors.dark_red);
+                            } else {
+                                
+                                // color it red
+                                tile.setForegroundColor(colors.red);
+                                tile.setBackgroundColor(colors.red);
+                            }
+                        } else {
+                            
+                            // color it blue
+                            tile.setForegroundColor(colors.blue);
+                            tile.setBackgroundColor(colors.blue);
                         }
                     }
-                } else {
-                    o = 0;
                 }
-                if (o < 6) {
-                    tiles[i][j].shapes.get(".background")[0].setFill(colors_assignment_bg_white[o]);
-                    tiles[i][j].shapes.get(".foreground")[0].setFill(colors_assignment[o]);
-                } else if (o < 100) {
-                    tiles[i][j].shapes.get(".background")[0].setFill(colors_assignment_bg_black[o - 5]);
-                    tiles[i][j].shapes.get(".foreground")[0].setFill(colors_assignment[o - 5]);
-                } else {
-                    tiles[i][j].shapes.get(".background")[0].setFill(colors_assignment_bg_black[o - 100]);
-                    tiles[i][j].shapes.get(".foreground")[0].setFill(colors_assignment[o - 100]);
+                
+                // colorize, but not the selected unit
+                if (unit !== ui.selectedUnit) {
+                    if (this.attackable && this.attackable.intersection(tileSet).entries().length > 0) {
+                        tile.setForegroundColor(colors.trans_green);
+                    } else if (this.movable && this.movable.intersection(tileSet).entries().length > 0) {
+                        tile.setForegroundColor(colors.yellow);
+                        tile.setBackgroundColor(colors.dark_yellow);
+                    }
                 }
             }
         }
+        
         Field.stage.draw();
     },
 
-    Tile: function(index, position) {
-
-        var x = position[0] * Field.scale + (Field.stage.getWidth() / 2);
-        var y = position[1] * Field.scale + (Field.stage.getHeight() / 2);
-
+    FieldTile: function(index) {
+        var trig = {
+            a: Math.sqrt(3) / 2,
+            b: 1 / 2,
+            c: 1
+        };
+        var width = 33 * trig.a;
+        var height = (17 * trig.b) + 16;
+        var i = index[0];
+        var j = index[1];
+        var x = (i * (2 * trig.a)) + ((j % 2) * trig.a);
+        var y = (j * (3 * trig.b));
+        var position = [(x + (1 - width / 2)), (y + (1 - height / 2))];
+        x = position[0] * Field.scale + (Field.stage.getWidth() / 2);
+        y = position[1] * Field.scale + (Field.stage.getHeight() / 2);
+        
+        // if (GameState.battlefield) {
+        //     this.tile = GameState.battlefield.grid.tile[x][y];
+        // }
+        
         this.index = index;
         this.position = [x, y];
-
         this.shapes = new Kinetic.Group();
         this.shapes.add(new Field.CustomHex('background', x, y, 1.0 * Field.scale, 'rgba(255,255,255,0.1)', 'rgba(255,255,255,0.15)', 2, 'lighter'));
         this.shapes.add(new Field.CustomHex('foreground', x, y, 0.8 * Field.scale, 'rgba(255,255,255,0.1)', 'rgba(255,255,255,0.15)', 1, 'lighter'));
@@ -137,6 +156,18 @@ var Field = {
             Field.showIndicator(index, x, y);
             if (Field.onTileOver) Field.onTileOver.apply(this, [index]);
         });
+        
+        this.setColor = function(layer, color) {
+            this.shapes.get(layer)[0].setFill(color)
+        }
+        
+        this.setForegroundColor = function(color) {
+            this.setColor(".foreground", color)
+        }
+        
+        this.setBackgroundColor = function(color) {
+            this.setColor(".background", color)
+        }
     },
 
     CustomHex: function(name, x, y, radius, fill, stroke, strokeWidth, composite) {
@@ -181,67 +212,80 @@ var Field = {
         Field.indicatorLayer.draw();
         //console.log("Hide Tile Indicator");
     },
-
+    
     onTileClick: function(index) {
-        var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
-        if (unitId) { //If unit is at location
-            //Check Owner
-            if (GameState.owners[unitId] == GameState.player) {
-                ui.setLeftUnit(GameState.units[unitId], unitId);
-                //Context Menus Will Go Here
-                //Select player
-                selectedPlayer = undefined;
-                if (GameState.grid.tiles[index[0]][index[1]].tile.contents.scient) {
-                    selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.scient.name;
+                
+        // did we click on tile holding a unit?
+        var unit = GameState.battlefield.getUnitByLocation(index);
+        if (unit) {
+            
+            // has one of our units already been selected?
+            if (ui.selectedUnit) {
+                
+                // if we clicked the selected unit again, just deselect it
+                if (unit === ui.selectedUnit) {
+                    ui.selectedUnit = null;
+                    this.attackable = null;
+                    this.movable = null;
+                    Field.update();
                 } else {
-                    selectedPlayer = GameState.grid.tiles[index[0]][index[1]].tile.contents.nescient.name;
-                }
-                ui.setMoveable(index[0], index[1], selectedPlayer);
-            } else {
-                //ui.setRightUnit(GameState.units[unitId]);
-                //Context Menus Will Go Here
-                if (selectedPlayer) {
-                    //TODO: SHOW ACTION CONFIRM
-                    if (GameState.whose_turn == GameState.player || 1 == 1) {
-                        ui.showConfirm({
-                            header: "Action",
-                            message: "Attack unit?",
-                            onconfirm: function() {
-                                GameState.attack({
-                                    unitID: GameState.getUnitIdByName(selectedPlayer),
-                                    targetLocation: [index[0], index[1]] // GameState.getUnitIdByLocation(index[0], index[1]) //
-                                });
-                                selectedPlayer = undefined;
-                                ui.setMoveable(index[0], index[1], selectedPlayer);
-                                ui.setLeftUnit();
-                            }
-                        });
-                    } else {
-                        alert("It's not your turn");
-                    };
-                };
-            }
-        } else {
-            if (selectedPlayer) {
-                if (GameState.whose_turn == GameState.player || 1 == 1) {
+                    
+                    // attack! even if it's our unit!
                     ui.showConfirm({
                         header: "Action",
-                        message: "Move unit?",
-                        onconfirm: function() {
-                            GameState.move({
-                                unitID: GameState.getUnitIdByName(selectedPlayer),
+                        message: "Attack unit?",
+                        onconfirm: function() {                            
+                            GameState.attack({
+                                unitID: ui.selectedUnit.ID,
                                 targetLocation: [index[0], index[1]]
-                            });
-                            ui.setLeftUnit();
+                            }).addCallback(function() {
+                                ui.setLeftUnit();
+                                Field.computeRanges(index);
+                                Field.update();
+                            })
                         }
                     });
-                } else {
-                    alert("It's not your turn");
                 }
+                
+            // if no unit is selected, check to see
+            // if we own the one we just clicked on
+            // TODO: would be nice if getUnitOwnerByLocation was a property 'owner' on unit...
+            } else if (GameState.battlefield.getUnitOwnerByLocation(index) === GameState.player) {
+                ui.selectedUnit = unit
+                Field.computeRanges(index);
+                Field.update();
+            } else {
+                alert("That's not your unit");
             }
+          
+        // if we didn't click on another unit, but 
+        // have a selection, then we are trying to move
+        } else if (ui.selectedUnit) {
+            ui.showConfirm({
+                header: "Action",
+                message: "Move unit?",
+                onconfirm: function() {
+                    GameState.move({
+                        unitID: ui.selectedUnit.ID,
+                        targetLocation: [index[0], index[1]]
+                    }).addCallback(function() {
+                        ui.setLeftUnit();
+                        Field.computeRanges(index);
+                        Field.update();
+                    })
+                }
+            });
         }
     },
-
+    
+    computeRanges: function(index) {
+        var weaponRange = GameState.battlefield.tilesInRangeOfWeapon(index, ui.selectedUnit.weapon);
+        var moveRange = GameState.battlefield.makeRange(index, ui.selectedUnit.move);
+        var occupied = new JS.Set(_.values(GameState.battlefield.locs));
+        this.attackable = moveRange.intersection(occupied);
+        this.movable = moveRange.difference(occupied);
+    },
+    
     onTileOver: function(index) {
         var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
         if (unitId) { //If unit is at location
@@ -258,7 +302,7 @@ var Field = {
             ui.setRightUnit();
         }
     }
-
+    
     // Field.onTileOver = function(index, position){
     //  ui.showTileIndicator(position[0], position[1]);
     // }

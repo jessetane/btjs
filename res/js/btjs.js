@@ -28,25 +28,31 @@ var GameState = {
             // get initial state
             var getInitialState = battleService.initial_state();
             getInitialState.then(function(res) {
-                
-                //scope?
-                GameState.init_state = res.initial_state;
-                GameState.grid = res.initial_state.grid.grid;
-                GameState.locs = res.initial_state.init_locs;
-                GameState.owners = res.initial_state.owners;
-                GameState.start_time = res.initial_state.start_time;
-                GameState.units = res.initial_state.units;
-                GameState.player_names = res.initial_state.player_names;
+                var state = res.initial_state;
+                GameState.grid = state.grid.grid;
+                GameState.locs = state.init_locs;
+                GameState.owners = state.owners;
+                GameState.start_time = state.start_time;
+                GameState.units = state.units;
+                GameState.player_names = state.player_names;
                 GameState.whose_action = GameState.player_names[0];
-
-                //TODO Calculate HPs
                 GameState.HPs = [];
-                for (var key in GameState.units) {
-                    GameState.HPs[key] = 0;
-                }
-                GameState.battlefield = new Battlefield(GameState.grid, GameState.locs, GameState.owners);
                 
-                // execute callback
+                for (var ID in GameState.units) {
+                    
+                    //TODO Calculate HPs
+                    GameState.HPs[ID] = 0;  
+                    
+                    // make 'grid' and 'units' scients homologous and attach their ID's
+                    var scient = GameState.units[ID].scient;
+                    scient.ID = ID;
+                    var x = scient.location[0];
+                    var y = scient.location[1];
+                    GameState.grid.tiles[x][y].tile.contents.scient = scient;
+                }
+                
+                // create the battlefield
+                GameState.battlefield = new Battlefield(GameState.grid, GameState.locs, GameState.owners);
                 cb();
             });
         });
@@ -144,37 +150,24 @@ var GameState = {
     },
     
     updateState: function () {
-        
-        // TODO: 
-        // if so request the missing results and apply them
-            // GameState.applyResults(result)
-            // GameState.updateActionNumber(result.num)  
-        
         var last_state = battleService.get_last_state();
         var state = undefined;
         last_state.then(function(state) {
-            if (state != null) { //Catches the first turn when there is no last_state.
-                if (state.locs) { //when is this ever false?
+            if (state != null) {
+                if (state.locs) { 
+                    // when is state ever false?
+                    // the first turn when there is no last_state.
+                    // also when 'turn' advances (not ply)
+                    
                     //NOTE: THIS IS WHAT ACTUALLY CHANGES THE GAME STATE.
-                    GameState.clearGridContents();
                     GameState.HPs = state.HPs;
                     GameState.updateUnitLocations(state.locs);
                 } else {
-                    console.log("GameState.update is false.");
-                    //return true;
+                    console.log("GameState.update is false.");  // ??
                 }
+                GameState.updateActionNumber(state.num + 1);
             }
-            GameState.updateActionNumber(state.num + 1);
         });
-    },
-    
-    clearGridContents: function() {
-        for (var x in this.grid.tiles) {
-            for (var y in this.grid.tiles[x]) {
-                var tile = this.grid.tiles[x][y].tile;
-                tile.contents = null;
-            }
-        }
     },
     
     updateUnitLocations: function(locs) {
@@ -191,6 +184,7 @@ var GameState = {
         this.locs = locs;
         return change;
     },
+    
     getUnitById: function(id) {
         if (this.units[id]) {
             return this.units[id];
@@ -198,6 +192,7 @@ var GameState = {
 
         return false;
     },
+    
     getUnitByName: function(name) { //buggy?
         for (var id in this.units) {
             var unit = this.units[id];
@@ -207,6 +202,7 @@ var GameState = {
 
         return false;
     },
+    
     getUnitIdByName: function(name) {
         for (var id in this.units) {
             var unit = this.units[id];
@@ -216,12 +212,14 @@ var GameState = {
 
         return false;
     },
+    
     getUnitIdByContents: function(contents) {
         if (contents.scient) return this.getUnitIdByName(contents.scient.name);
         if (contents.nescient) return this.getUnitIdByName(contents.nescient.name);
 
         return false;
     },
+    
     getUnitIdByLocation: function(x, y) {
         for (var l in this.locs) {
             if (this.locs[l][0] == x && this.locs[l][1] == y) return l;
@@ -278,6 +276,8 @@ var GameState = {
             ui.showMessage({message: response});
             return response;
         });
+        
+        return action;
     },
     
     attack: function(args){
@@ -320,6 +320,8 @@ var GameState = {
             ui.showMessage({message: response});
             return response;
         });
+        
+        return action;
     },
     
     pass: function(args){
