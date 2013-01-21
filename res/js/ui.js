@@ -235,6 +235,7 @@ function UI() {
     ///////
     
     var self = this;
+    this.selectedUnit = undefined;
     this._intervalTimer = undefined;
     this._modalCallback = undefined;
   
@@ -259,6 +260,9 @@ function UI() {
             }
         });
     });
+    
+    this.field = Field;
+    Field.init();
     
     $('#authenticate').onclick = this.authenticate.bind(this);
     $('#modalYes').onclick = this.modalYes.bind(this);
@@ -296,6 +300,10 @@ function UI() {
         self.updateTimer();
     }, 1000);
 };
+
+UI.prototype.domSetup = function() {
+  
+}
 
 UI.prototype.authenticate = function() {
     //Idea--
@@ -449,55 +457,6 @@ UI.prototype.setRightUnit = function(unit, unitId) {
     this.unitRight.text.secondaryComp.setText(secondaryComp);
     this.unitRight.layer.draw();
     //console.log(unit);
-};
-
-UI.prototype.setMoveable = function(x, y, targetUnit) {
-    //Clear all moveable tiles
-    for (var i = 0; i < 16; i++) {
-        for (var j = 0; j < 16; j++) {
-            if (GameState.grid.tiles[i][j].tile.contents == "movable" || GameState.grid.tiles[i][j].tile.contents == "attackable") GameState.grid.tiles[i][j].tile.contents = null;
-        }
-    }
-
-    range = 0;
-    if (targetUnit) {
-        targetUnit = GameState.getUnitById(GameState.getUnitIdByName(targetUnit));
-        if (targetUnit.scient) targetUnit = targetUnit.scient;
-        if (targetUnit.nescient) targetUnit = targetUnit.nescient;
-
-        //TODO use defs.js battlefield object. battleField.range.indexOf(weapon) > -1;
-        if (targetUnit.weapon) {
-            //DOT -- ['Glove', 'Firestorm', 'Icestorm',  'Blizzard',   'Pyrocumulus']
-            if (targetUnit.weapon.glove || targetUnit.weapon.firestorm || targetUnit.weapon.icestorm || targetUnit.weapon.blizzard || targetUnit.weapon.pyrocumulus) range = 4;
-
-            //Ranged -- ['Bow',   'Magma',     'Firestorm', 'Forestfire', 'Pyrocumulus']
-            if (targetUnit.weapon.bow || targetUnit.weapon.magma || targetUnit.weapon.firestorm || targetUnit.weapon.forestfire || targetUnit.weapon.pyrocumulus) range = 4;
-
-            //AOE -- ['Wand',  'Avalanche', 'Icestorm',  'Blizzard',   'Permafrost']
-            if (targetUnit.weapon.wand || targetUnit.weapon.avalanche || targetUnit.weapon.icestorm || targetUnit.weapon.blizzard || targetUnit.weapon.permafrost) range = 16;
-
-            //Full -- ['Sword', 'Magma', 'Avalanche', 'Forestfire', 'Permafrost']
-            if (targetUnit.weapon.sword || targetUnit.weapon.magma || targetUnit.weapon.avalanche || targetUnit.weapon.forestfire || targetUnit.weapon.permafrost) range = 16;
-        }
-    }
-
-    if (range) {
-        //Fill all move tiles
-        for (var i = x - range; i <= x + range; i++) {
-            for (var j = y - range; j <= y + range; j++) {
-                if (GameState.grid.tiles[i] && GameState.grid.tiles[i][j] && GameState.grid.tiles[i][j].tile.contents == null) GameState.grid.tiles[i][j].tile.contents = "movable";
-            }
-        }
-
-        //Fill all hit tiles
-        for (var i = x - (range * 2); i <= x + (range * 2); i++) {
-            for (var j = y - (range * 2); j <= y + (range * 2); j++) {
-                if (GameState.grid.tiles[i] && GameState.grid.tiles[i][j] && GameState.grid.tiles[i][j].tile.contents == null) GameState.grid.tiles[i][j].tile.contents = "attackable";
-            }
-        }
-    }
-
-    Field.update();
 };
 
 UI.prototype.updateTimer = function() {

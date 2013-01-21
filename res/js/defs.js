@@ -66,6 +66,7 @@ function Scient(scient) {
     //bad idea.
     this.weapon = new window[wep_type.charAt(0).toUpperCase() + wep_type.slice(1)](wep_el, copy_comp(wep[wep_type].comp));
     this.weapon_bonus = scient.weapon_bonus;
+    this.ID = scient.ID;
     this.sex = scient.sex;
     this.val = this.setVal();
     this.DOD = undefined;
@@ -131,10 +132,10 @@ function Grid(grid) {
     }
     this.tiles = tiles;
 }
-JS.require('JS.Set');
+
 function Battlefield(grid, init_locs, owners) {
     "use strict";
-    this.grid = new Grid(grid);
+    this.grid = new Grid(grid); // from json
     this.locs = init_locs;
     this.owners = owners;
     this.HPs = [];
@@ -142,7 +143,7 @@ function Battlefield(grid, init_locs, owners) {
         var loc = this.locs[key];
         this.HPs[key] = this.grid.tiles[loc[0]][loc[1]].contents.hp;
     }
-
+    
     this.graveyard = [];
     this.dmg_queue = {};
     this.direction = {
@@ -193,7 +194,7 @@ function Battlefield(grid, init_locs, owners) {
         if (this.grid.tiles[xsrc][ysrc].contents) {
             if (!this.grid.tiles[xdest][ydest].contents) {
                 var move = this.grid.tiles[xsrc][ysrc].contents.move;
-                var range = this.make_range(src, move);
+                var range = this.makeRange(src, move);
                 if (!range.add(dest)) {
                     this.grid.tiles[xdest][ydest].contents = this.grid.tiles[xsrc][ysrc].contents;
                     this.locs[unitID] = [xdest, ydest];
@@ -312,6 +313,29 @@ function Battlefield(grid, init_locs, owners) {
     this.get_rotations = function() {};
     this.rotate = function() {};
 
+    this.getUnitByLocation = function(location) {
+        var x = location[0];
+        var y = location[1];
+        return this.grid.tiles[x][y].contents;
+    }
+
+    // this should be done in GameState.init by computing a reverse lookup
+    this.getUnitIdByLocation = function(location) {
+        for (var id in this.locs) {
+            var loc = this.locs[id];
+            if (loc[0] === location[0] && 
+                loc[1] === location[1]) {
+                return id;
+            }
+        }
+    }
+    
+    // this should be done in GameState.init by computing a reverse lookup
+    this.getUnitOwnerByLocation = function(location) {
+        var id = this.getUnitIdByLocation(location);
+        return this.owners[id];
+    }
+
     // weapon ops
     this.make_pattern = function(loc, distance, pointing) {
         //var tiles = [];
@@ -330,7 +354,7 @@ function Battlefield(grid, init_locs, owners) {
         return pattern;
     };
 
-    this.map_to_grid = function(loc, weapon) {
+    this.tilesInRangeOfWeapon = function(loc, weapon) {
         var weaponHasRange = false;
         var weaponHasAOE = false;
         for (var w in this.ranged) {
@@ -347,8 +371,8 @@ function Battlefield(grid, init_locs, owners) {
         }
         if (weaponHasRange) {
             var move = 4;
-            var no_hit = this.make_range(loc, move);
-            var hit = this.make_range(loc, 2 * move);
+            var no_hit = this.makeRange(loc, move);
+            var hit = this.makeRange(loc, 2 * move);
             return hit.difference(no_hit);
         } else if (weaponHasAOE) {
             var tiles = [];
@@ -366,7 +390,7 @@ function Battlefield(grid, init_locs, owners) {
         }
     };
 
-    this.make_range = function(location, distance) {
+    this.makeRange = function(location, distance) {
         var tilesets = [];
         tilesets.push(this.get_adjacent(location));
         while (tilesets.length < distance) {

@@ -30,9 +30,8 @@ Element.prototype.$$ = function (selector) {
     return this.querySelectorAll(selector);
 };
 
-var selectedPlayer = undefined; //TODO: Where to put this?
-
 function init() {
+    // get dojo
     dojo.require("dijit.Tooltip");
     dojo.require("dojox.rpc.Service");
     dojo.require("dojox.rpc.JsonRPC");
@@ -45,10 +44,11 @@ function init() {
     battleService = null;
     authService = new AuthService();
     
-    //
-    Field.init();
-    ui = new UI();
-    resizeCanvas();
+    // as soon as we have JS.Set, start drawing the ui
+    JS.require('JS.Set', function() {
+        ui = new UI();
+        resizeCanvas();
+    });
 }
 
 function resizeCanvas() {

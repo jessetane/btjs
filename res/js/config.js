@@ -70,6 +70,7 @@ var colors = {
 	trans_red: "rgba(133,0,0,0.2)",
 	trans_blue: 'rgba(46,97,154,0.2)',
 	trans_green: "#cbfac3",
+	trans_green: "rgba(91,203,73,0.35)",
 	trans_yellow: "#fcfccc",
 	trans_purple: "#ecdffc",
 	
