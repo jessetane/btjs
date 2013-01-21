@@ -227,6 +227,7 @@ var Field = {
                     ui.selectedUnit = null;
                     this.attackable = null;
                     this.movable = null;
+                    ui.setLeftUnit();
                     Field.update();
                 } else {
                     
@@ -239,7 +240,6 @@ var Field = {
                                 unitID: ui.selectedUnit.ID,
                                 targetLocation: [index[0], index[1]]
                             }).addCallback(function() {
-                                ui.setLeftUnit();
                                 Field.computeRanges(index);
                                 Field.update();
                             })
@@ -252,6 +252,7 @@ var Field = {
             // TODO: would be nice if getUnitOwnerByLocation was a property 'owner' on unit...
             } else if (GameState.battlefield.getUnitOwnerByLocation(index) === GameState.player) {
                 ui.selectedUnit = unit
+                ui.setLeftUnit({ scient: unit });
                 Field.computeRanges(index);
                 Field.update();
             } else {
@@ -269,7 +270,6 @@ var Field = {
                         unitID: ui.selectedUnit.ID,
                         targetLocation: [index[0], index[1]]
                     }).addCallback(function() {
-                        ui.setLeftUnit();
                         Field.computeRanges(index);
                         Field.update();
                     })
