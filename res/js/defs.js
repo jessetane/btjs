@@ -73,10 +73,6 @@ function Scient(scient) {
     this.calcstats();
 }
 
-Scient.prototype.__defineGetter__('owner', function() {
-    return GameState.battlefield.get
-}) 
-
 function Weapon(element, comp, wep_type) {
     "use strict";
     Stone.call(this, copy_comp(comp));
