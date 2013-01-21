@@ -12,7 +12,7 @@ AuthService.prototype.authenticate = function(args) {
     
     //This will be removed when a real public key authentication service is implemented.
     var xhrArgs = {
-        url: "http://" + HOST + ":8888/auth/login",
+        url: "/auth/login",
         postData: "u=" + username + "&p=" + password,
         handleAs: "json",
         preventCache: true,
