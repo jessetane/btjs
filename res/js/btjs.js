@@ -110,6 +110,7 @@ var GameState = {
     },
     
     applyResults: function (result) {
+        console.log("applying result.");
         var cmd = result.command;
         var res = result.response;
         var type = cmd.type;
@@ -121,7 +122,8 @@ var GameState = {
         
         // update results
         if (type == "move") {
-            Battlefield.move_scient(cmd.unit, cmd.target)
+            console.log("Moving Scient.");
+            GameState.battlefield.move_scient(cmd.unit, cmd.target)
         } else if (type == "attack") {
             apply_dmgs(res.result)
         }
@@ -129,7 +131,8 @@ var GameState = {
         function apply_dmgs (damages) {
             for (var d in damages) {
                 var damage = damages[d];
-                Battlefield.apply_dmg(damage[0], damage[1]);
+                console.log("applying damge from result.");
+                GameState.battlefield.apply_dmg(damage[0], damage[1]);
             }
         }
     },
@@ -160,7 +163,10 @@ var GameState = {
                     // also when 'turn' advances (not ply)
                     
                     //NOTE: THIS IS WHAT ACTUALLY CHANGES THE GAME STATE.
-                    GameState.HPs = state.HPs;
+                    var HPs = state.HPs;
+                    GameState.HPs = HPs;
+                    console.log("applying damage from last_state.");
+                    GameState.battlefield.apply_HPs(HPs);
                     GameState.updateUnitLocations(state.locs);
                 } else {
                     console.log("GameState.update is false.");  // ??

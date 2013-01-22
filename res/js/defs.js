@@ -214,7 +214,17 @@ function Battlefield(grid, init_locs, owners) {
     this.apply_dmg = function(unitID, amount) {
         var loc = this.locs[unitID];
         this.grid.tiles[loc[0]][loc[1]].contents.hp -= amount;
+        this.HPs[unitID] = this.grid.tiles[loc[0]][loc[1]].contents.hp; //babysitting.
     };
+    this.apply_HPs = function(HPs) {
+        //Applies damage from last_state.
+        for (var unitID in HPs) {
+            console.log("unitID: " + unitID + " HP: " + HPs[unitID]);
+            var loc = this.locs[unitID];
+            this.grid.tiles[loc[0][loc[1]]].contents.hp = HPs[unitID];
+            this.HPs[unitID] = HPs[unitID]; //babysitting.
+        }
+    }
     this.apply_queued = function() {}; //getting this right will be tricky.
     this.bury = function(unitID) {
         //TODO test me
@@ -226,7 +236,7 @@ function Battlefield(grid, init_locs, owners) {
         //remove from dmg_queue
         //append to graveyard?
         delete this.locs[unitID];
-        delete this.HPs[unitID];
+        delete this.HPs[unitID]; //babysitting.
         this.grid.tiles[loc[0]][loc[1]].contents = null;
     };
 
