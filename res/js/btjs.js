@@ -103,6 +103,8 @@ var GameState = {
                 GameState.last_last_result = GameState.last_result;
                 GameState.last_result = result;
             }
+            
+            return result.result;
         }
     },
     
@@ -288,6 +290,7 @@ var GameState = {
     },
     
     attack: function(args){
+        var self = this;
         var type = "attack";
         var unitID = args.unitID || "";
         var targetLocation = args.targetLocation || [0,0];
@@ -300,26 +303,33 @@ var GameState = {
             targetLocation //Target
         ]);
         
-        action.addCallback(function(response){
-            //TODO Update Gamestage field -- (We'll get the field update on the next long poll)
-            if(response.response.result){
-                //TODO correctly handle wand/bow attacks (use a for each).
-                //TODO check for applied damage.
-                ui.setLeftUnit();
-                ui.setRightUnit();
-                if(response.response.result[0][1] != "Dead."){
-                    var unitID = response.response.result[0][0];
-                    var amount = response.response.result[0][1];
-                    console.log("unitID: " + unitID);
-                    console.log("amount: " + amount);
-                    GameState.battlefield.apply_dmg(unitID, amount);
-                    ui.showMessage({message: amount + " Damage."});
-                }else{
-                    GameState.battlefield.bury(unitID);
-                    ui.showMessage({message: "Unit defeated."});
+        action.addCallback(function(res){
+            var response = res.response;
+            if (response) {
+                var results = self.processActionResult(response);
+            
+                if (results) {
+                    var messages = [];
+                    for (var r in results) {
+                        var result = results[r];
+                        var ID = result[0];
+                        var damage = result[1];
+                        var unit = GameState.battlefield.units[ID];
+                        if (damage === "Dead.") {
+                            messages.push(unit.owner + "'s " + unit.name + " defeated.");
+                        } else {
+                            messages.push(unit.owner + "'s " + unit.name + " took " + damage + " damage.");
+                        }
+                        ui.showMessage({ message: messages.join("<br>") });
+                    }
                 }
             }
+            
+            // why here?
+            // ui.setLeftUnit();
+            // ui.setRightUnit();
             Field.update();
+            
             return response;
         });
         
