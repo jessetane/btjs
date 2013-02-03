@@ -66,6 +66,7 @@ function Scient(scient) {
     //bad idea.
     this.weapon = new window[wep_type.charAt(0).toUpperCase() + wep_type.slice(1)](wep_el, copy_comp(wep[wep_type].comp));
     this.weapon_bonus = scient.weapon_bonus;
+    this.location = scient.location;
     this.ID = scient.ID;
     this.sex = scient.sex;
     this.val = this.setVal();
@@ -138,12 +139,16 @@ function Battlefield(grid, init_locs, owners) {
     this.grid = new Grid(grid); // from json
     this.locs = init_locs;
     this.owners = owners;
-    this.HPs = [];
+    this.HPs = {};
+    this.units = {};
     for (var key in this.locs) {
         var loc = this.locs[key];
-        this.HPs[key] = this.grid.tiles[loc[0]][loc[1]].contents.hp;
+        var unit = this.grid.tiles[loc[0]][loc[1]].contents;
+        if (unit) {
+          this.HPs[key] = unit.hp;
+          this.units[unit.ID] = unit;
+        }
     }
-    
     this.graveyard = [];
     this.dmg_queue = {};
     this.direction = {

@@ -291,11 +291,11 @@ var Field = {
         if (unitId) { //If unit is at location
             //Check Owner
             if (GameState.owners[unitId] != GameState.player) {
-                ui.setRightUnit(GameState.units[unitId], unitId);
+                ui.setRightUnit(GameState.battlefield.units[unitId], unitId);
                 //Context Menus Will Go Here
             } else {
                 ui.setRightUnit();
-                //ui.setRightUnit(GameState.units[unitId]);
+                //ui.setRightUnit(GameState.battlefield.units[unitId]);
                 //Context Menus Will Go Here
             }
         } else {

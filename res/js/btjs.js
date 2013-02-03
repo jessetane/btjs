@@ -179,16 +179,16 @@ var GameState = {
     updateUnitLocations: function(locs) {
         var change = false;
         for (var ID in locs) {
-            var loc = locs[ID]
-            var scient = this.units[ID].scient;
-            if (!_.isEqual(scient.location, loc)) {
-                var oldX = scient.location[0];
-                var oldY = scient.location[1];
+            var loc = locs[ID];
+            var unit = this.battlefield.units[ID];
+            if (!_.isEqual(unit.location, loc)) {
+                var oldX = unit.location[0];
+                var oldY = unit.location[1];
                 var newX = loc[0];
                 var newY = loc[1];
                 this.battlefield.grid.tiles[oldX][oldY].contents = null;
-                this.battlefield.grid.tiles[newX][newY].contents = scient;
-                scient.location = loc;
+                this.battlefield.grid.tiles[newX][newY].contents = unit;
+                unit.location = loc;
                 change = true;
             }
         }
