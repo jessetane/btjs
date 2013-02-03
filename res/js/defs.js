@@ -340,9 +340,14 @@ function Battlefield(grid, init_locs, owners) {
     this.rotate = function() {};
 
     this.getUnitByLocation = function(location) {
-        var x = location[0];
-        var y = location[1];
-        return this.grid.tiles[x][y].contents;
+        for (var u in this.units) {
+            var unit = this.units[u];
+            if (unit) {
+                if (_.isEqual(location, unit.location)) {
+                    return unit;
+                }
+            }
+        }
     }
 
     // this should be done in GameState.init by computing a reverse lookup
@@ -354,12 +359,6 @@ function Battlefield(grid, init_locs, owners) {
                 return id;
             }
         }
-    }
-    
-    // this should be done in GameState.init by computing a reverse lookup
-    this.getUnitOwnerByLocation = function(location) {
-        var id = this.getUnitIdByLocation(location);
-        return this.owners[id];
     }
 
     // weapon ops

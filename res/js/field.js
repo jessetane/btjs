@@ -81,14 +81,13 @@ var Field = {
                 tile.setBackgroundColor(colors.gray);
                 
                 if (GameState.battlefield) {
-                    var owner = GameState.battlefield.getUnitOwnerByLocation([i, j]);
                     var unit = GameState.battlefield.getUnitByLocation([i, j]);
                     
                     // do we have a unit?
-                    if (owner) {
+                    if (unit) {
                         
                         // are we the owner?
-                        if (owner === GameState.player) {
+                        if (unit.owner === GameState.player) {
                             
                             // check to see if it is the selected unit
                             if (unit === ui.selectedUnit) {
@@ -114,11 +113,12 @@ var Field = {
                 // colorize, but not the selected unit
                 if (unit !== ui.selectedUnit) {
                     if (this.weaponRange && this.weaponRange.intersection(tileSet).entries().length > 0) {
-                        tile.setForegroundColor(colors.green);
-                        tile.setBackgroundColor(colors.dark_green);
-                    }
-                    if (this.attackable && this.attackable.intersection(tileSet).entries().length > 0) {
-                        tile.setForegroundColor(colors.trans_green);
+                        if (unit) {
+                            tile.setForegroundColor(colors.trans_green);
+                        } else {
+                            tile.setForegroundColor(colors.green);
+                            tile.setBackgroundColor(colors.dark_green);
+                        }
                     } else if (this.movable && this.movable.intersection(tileSet).entries().length > 0) {
                         tile.setForegroundColor(colors.yellow);
                         tile.setBackgroundColor(colors.dark_yellow);
@@ -257,7 +257,7 @@ var Field = {
             // if no unit is selected, check to see
             // if we own the one we just clicked on
             // TODO: would be nice if getUnitOwnerByLocation was a property 'owner' on unit...
-            } else if (GameState.battlefield.getUnitOwnerByLocation(index) === GameState.player) {
+            } else if (GameState.battlefield.getUnitByLocation(index).owner === GameState.player) {
                 ui.selectedUnit = unit
                 ui.setLeftUnit(unit);
                 Field.computeRanges(index);
