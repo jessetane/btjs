@@ -113,6 +113,10 @@ var Field = {
                 
                 // colorize, but not the selected unit
                 if (unit !== ui.selectedUnit) {
+                    if (this.weaponRange && this.weaponRange.intersection(tileSet).entries().length > 0) {
+                        tile.setForegroundColor(colors.green);
+                        tile.setBackgroundColor(colors.dark_green);
+                    }
                     if (this.attackable && this.attackable.intersection(tileSet).entries().length > 0) {
                         tile.setForegroundColor(colors.trans_green);
                     } else if (this.movable && this.movable.intersection(tileSet).entries().length > 0) {
@@ -227,6 +231,7 @@ var Field = {
                 // if we clicked the selected unit again, just deselect it
                 if (unit === ui.selectedUnit) {
                     ui.selectedUnit = null;
+                    this.weaponRange = null;
                     this.attackable = null;
                     this.movable = null;
                     ui.setLeftUnit();
