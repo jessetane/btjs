@@ -373,13 +373,13 @@ function Battlefield(grid, init_locs, owners) {
         var weaponHasRange = false;
         var weaponHasAOE = false;
         for (var w in this.ranged) {
-            if (this.ranged[w] === weapon.type) {
+            if (this.ranged[w] === weapon.wep_type) {
                 weaponHasRange = true;
                 break;
             }
         }
         for (var w2 in this.AOE) {
-            if (this.AOE[w2] === weapon.type) {
+            if (this.AOE[w2] === weapon.wep_type) {
                 weaponHasAOE = true;
                 break;
             }

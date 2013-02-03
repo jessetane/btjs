@@ -154,7 +154,9 @@ var Field = {
 
         this.shapes.on("mouseover", function() {
             Field.showIndicator(index, x, y);
-            if (Field.onTileOver) Field.onTileOver.apply(this, [index]);
+            if (Field.onTileOver) {
+                Field.onTileOver.apply(this, [index]);
+            }
         });
         
         this.setColor = function(layer, color) {
@@ -252,7 +254,7 @@ var Field = {
             // TODO: would be nice if getUnitOwnerByLocation was a property 'owner' on unit...
             } else if (GameState.battlefield.getUnitOwnerByLocation(index) === GameState.player) {
                 ui.selectedUnit = unit
-                ui.setLeftUnit({ scient: unit });
+                ui.setLeftUnit(unit);
                 Field.computeRanges(index);
                 Field.update();
             } else {
@@ -279,23 +281,27 @@ var Field = {
     },
     
     computeRanges: function(index) {
-        var weaponRange = GameState.battlefield.tilesInRangeOfWeapon(index, ui.selectedUnit.weapon);
         var moveRange = GameState.battlefield.makeRange(index, ui.selectedUnit.move);
         var occupied = new JS.Set(_.values(GameState.battlefield.locs));
-        this.attackable = moveRange.intersection(occupied);
+        this.weaponRange = GameState.battlefield.tilesInRangeOfWeapon(index, ui.selectedUnit.weapon);
+        this.attackable = this.weaponRange.intersection(occupied);
         this.movable = moveRange.difference(occupied);
     },
     
     onTileOver: function(index) {
-        var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
-        if (unitId) { //If unit is at location
+        
+        // HACK before the battlefield is created from the server info we shouldn't do this
+        if (!GameState.battlefield) return;
+        
+        var unit = GameState.battlefield.getUnitByLocation(index);
+        if (unit) { //If unit is at location
             //Check Owner
-            if (GameState.owners[unitId] != GameState.player) {
-                ui.setRightUnit(GameState.battlefield.units[unitId], unitId);
+            if (GameState.owners[unit.ID] != GameState.player) {
+                ui.setRightUnit(unit);
                 //Context Menus Will Go Here
             } else {
                 ui.setRightUnit();
-                //ui.setRightUnit(GameState.battlefield.units[unitId]);
+                //ui.setRightUnit(GameState.battlefield.units[unit.ID]);
                 //Context Menus Will Go Here
             }
         } else {
