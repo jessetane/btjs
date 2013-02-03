@@ -150,7 +150,7 @@ function Battlefield(grid, init_locs, owners) {
           this.units[unit.ID] = unit;
         }
     }
-    this.graveyard = [];
+    this.graveyard = {};
     this.dmg_queue = {};
     this.direction = {
         0: 'North',
@@ -218,9 +218,15 @@ function Battlefield(grid, init_locs, owners) {
     };
 
     this.apply_dmg = function(unitID, amount) {
-        var loc = this.locs[unitID];
-        this.grid.tiles[loc[0]][loc[1]].contents.hp -= amount;
-        this.HPs[unitID] = this.grid.tiles[loc[0]][loc[1]].contents.hp; //babysitting.
+        var unit = this.units[unitID];
+        if (typeof amount === "number") {
+            unit.hp -= amount;
+        } else if (amount === "Dead.") {
+            unit.hp = 0;
+        }
+        if (unit.hp <= 0) {
+            this.bury(unit);
+        }
     };
     this.apply_HPs = function(HPs) {
         //Applies damage from last_state.
@@ -229,18 +235,25 @@ function Battlefield(grid, init_locs, owners) {
         }
     }
     this.apply_queued = function() {}; //getting this right will be tricky.
-    this.bury = function(unitID) {
-        //TODO test me
-        console.log("in bury.");
-        var loc = this.locs[unitID];
-        var scient = this.grid.tiles[loc[0]][loc[1]].contents;
-        scient.hp = 0;
-        //scient.DOD = "fix me";
-        //remove from dmg_queue
-        //append to graveyard?
-        delete this.locs[unitID];
-        delete this.HPs[unitID]; //babysitting.
-        this.grid.tiles[loc[0]][loc[1]].contents = null;
+    this.bury = function(unit) {
+        
+        // ensure hp is non negative
+        unit.hp = 0;
+        
+        // add to graveyard
+        this.graveyard[unit.ID] = unit;
+        
+        // remove from units lookup
+        delete this.units[unit.ID];
+        
+        // remove from damage queue
+        //delete this.queued[unit.ID];
+        
+        // remove from grid tile
+        this.grid.tiles[unit.location[0]][unit.location[1]].contents = null;
+        
+        // clear location?
+        //unit.location = [-1, -1];
     };
 
     this.get_adjacent = function(tile, direction) {
