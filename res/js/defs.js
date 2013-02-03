@@ -66,7 +66,9 @@ function Scient(scient) {
     //bad idea.
     this.weapon = new window[wep_type.charAt(0).toUpperCase() + wep_type.slice(1)](wep_el, copy_comp(wep[wep_type].comp));
     this.weapon_bonus = scient.weapon_bonus;
+    this.location = scient.location;
     this.ID = scient.ID;
+    this.owner = scient.owner;
     this.sex = scient.sex;
     this.val = this.setVal();
     this.DOD = undefined;
@@ -138,13 +140,17 @@ function Battlefield(grid, init_locs, owners) {
     this.grid = new Grid(grid); // from json
     this.locs = init_locs;
     this.owners = owners;
-    this.HPs = [];
+    this.HPs = {};
+    this.units = {};
     for (var key in this.locs) {
         var loc = this.locs[key];
-        this.HPs[key] = this.grid.tiles[loc[0]][loc[1]].contents.hp;
+        var unit = this.grid.tiles[loc[0]][loc[1]].contents;
+        if (unit) {
+          this.HPs[key] = unit.hp;
+          this.units[unit.ID] = unit;
+        }
     }
-    
-    this.graveyard = [];
+    this.graveyard = {};
     this.dmg_queue = {};
     this.direction = {
         0: 'North',
@@ -212,32 +218,42 @@ function Battlefield(grid, init_locs, owners) {
     };
 
     this.apply_dmg = function(unitID, amount) {
-        var loc = this.locs[unitID];
-        this.grid.tiles[loc[0]][loc[1]].contents.hp -= amount;
-        this.HPs[unitID] = this.grid.tiles[loc[0]][loc[1]].contents.hp; //babysitting.
+        var unit = this.units[unitID];
+        if (typeof amount === "number") {
+            unit.hp -= amount;
+        } else if (amount === "Dead.") {
+            unit.hp = 0;
+        }
+        if (unit.hp <= 0) {
+            this.bury(unit);
+        }
     };
     this.apply_HPs = function(HPs) {
         //Applies damage from last_state.
-        for (var unitID in HPs) {
-            console.log("unitID: " + unitID + " HP: " + HPs[unitID]);
-            var loc = this.locs[unitID];
-            this.grid.tiles[loc[0][loc[1]]].contents.hp = HPs[unitID];
-            this.HPs[unitID] = HPs[unitID]; //babysitting.
+        for (var ID in HPs) {
+          this.units[ID].hp = HPs[ID];
         }
     }
     this.apply_queued = function() {}; //getting this right will be tricky.
-    this.bury = function(unitID) {
-        //TODO test me
-        console.log("in bury.");
-        var loc = this.locs[unitID];
-        var scient = this.grid.tiles[loc[0]][loc[1]].contents;
-        scient.hp = 0;
-        //scient.DOD = "fix me";
-        //remove from dmg_queue
-        //append to graveyard?
-        delete this.locs[unitID];
-        delete this.HPs[unitID]; //babysitting.
-        this.grid.tiles[loc[0]][loc[1]].contents = null;
+    this.bury = function(unit) {
+        
+        // ensure hp is non negative
+        unit.hp = 0;
+        
+        // add to graveyard
+        this.graveyard[unit.ID] = unit;
+        
+        // remove from units lookup
+        delete this.units[unit.ID];
+        
+        // remove from damage queue
+        //delete this.queued[unit.ID];
+        
+        // remove from grid tile
+        this.grid.tiles[unit.location[0]][unit.location[1]].contents = null;
+        
+        // clear location?
+        //unit.location = [-1, -1];
     };
 
     this.get_adjacent = function(tile, direction) {
@@ -324,9 +340,14 @@ function Battlefield(grid, init_locs, owners) {
     this.rotate = function() {};
 
     this.getUnitByLocation = function(location) {
-        var x = location[0];
-        var y = location[1];
-        return this.grid.tiles[x][y].contents;
+        for (var u in this.units) {
+            var unit = this.units[u];
+            if (unit) {
+                if (_.isEqual(location, unit.location)) {
+                    return unit;
+                }
+            }
+        }
     }
 
     // this should be done in GameState.init by computing a reverse lookup
@@ -338,12 +359,6 @@ function Battlefield(grid, init_locs, owners) {
                 return id;
             }
         }
-    }
-    
-    // this should be done in GameState.init by computing a reverse lookup
-    this.getUnitOwnerByLocation = function(location) {
-        var id = this.getUnitIdByLocation(location);
-        return this.owners[id];
     }
 
     // weapon ops
@@ -368,13 +383,13 @@ function Battlefield(grid, init_locs, owners) {
         var weaponHasRange = false;
         var weaponHasAOE = false;
         for (var w in this.ranged) {
-            if (this.ranged[w] === weapon.type) {
+            if (this.ranged[w] === weapon.wep_type) {
                 weaponHasRange = true;
                 break;
             }
         }
         for (var w2 in this.AOE) {
-            if (this.AOE[w2] === weapon.type) {
+            if (this.AOE[w2] === weapon.wep_type) {
                 weaponHasAOE = true;
                 break;
             }

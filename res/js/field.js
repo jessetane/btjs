@@ -81,14 +81,13 @@ var Field = {
                 tile.setBackgroundColor(colors.gray);
                 
                 if (GameState.battlefield) {
-                    var owner = GameState.battlefield.getUnitOwnerByLocation([i, j]);
                     var unit = GameState.battlefield.getUnitByLocation([i, j]);
                     
                     // do we have a unit?
-                    if (owner) {
+                    if (unit) {
                         
                         // are we the owner?
-                        if (owner === GameState.player) {
+                        if (unit.owner === GameState.player) {
                             
                             // check to see if it is the selected unit
                             if (unit === ui.selectedUnit) {
@@ -113,8 +112,13 @@ var Field = {
                 
                 // colorize, but not the selected unit
                 if (unit !== ui.selectedUnit) {
-                    if (this.attackable && this.attackable.intersection(tileSet).entries().length > 0) {
-                        tile.setForegroundColor(colors.trans_green);
+                    if (this.weaponRange && this.weaponRange.intersection(tileSet).entries().length > 0) {
+                        if (unit) {
+                            tile.setForegroundColor(colors.trans_green);
+                        } else {
+                            tile.setForegroundColor(colors.green);
+                            tile.setBackgroundColor(colors.dark_green);
+                        }
                     } else if (this.movable && this.movable.intersection(tileSet).entries().length > 0) {
                         tile.setForegroundColor(colors.yellow);
                         tile.setBackgroundColor(colors.dark_yellow);
@@ -154,7 +158,9 @@ var Field = {
 
         this.shapes.on("mouseover", function() {
             Field.showIndicator(index, x, y);
-            if (Field.onTileOver) Field.onTileOver.apply(this, [index]);
+            if (Field.onTileOver) {
+                Field.onTileOver.apply(this, [index]);
+            }
         });
         
         this.setColor = function(layer, color) {
@@ -225,6 +231,7 @@ var Field = {
                 // if we clicked the selected unit again, just deselect it
                 if (unit === ui.selectedUnit) {
                     ui.selectedUnit = null;
+                    this.weaponRange = null;
                     this.attackable = null;
                     this.movable = null;
                     ui.setLeftUnit();
@@ -250,9 +257,9 @@ var Field = {
             // if no unit is selected, check to see
             // if we own the one we just clicked on
             // TODO: would be nice if getUnitOwnerByLocation was a property 'owner' on unit...
-            } else if (GameState.battlefield.getUnitOwnerByLocation(index) === GameState.player) {
+            } else if (GameState.battlefield.getUnitByLocation(index).owner === GameState.player) {
                 ui.selectedUnit = unit
-                ui.setLeftUnit({ scient: unit });
+                ui.setLeftUnit(unit);
                 Field.computeRanges(index);
                 Field.update();
             } else {
@@ -279,23 +286,27 @@ var Field = {
     },
     
     computeRanges: function(index) {
-        var weaponRange = GameState.battlefield.tilesInRangeOfWeapon(index, ui.selectedUnit.weapon);
         var moveRange = GameState.battlefield.makeRange(index, ui.selectedUnit.move);
         var occupied = new JS.Set(_.values(GameState.battlefield.locs));
-        this.attackable = moveRange.intersection(occupied);
+        this.weaponRange = GameState.battlefield.tilesInRangeOfWeapon(index, ui.selectedUnit.weapon);
+        this.attackable = this.weaponRange.intersection(occupied);
         this.movable = moveRange.difference(occupied);
     },
     
     onTileOver: function(index) {
-        var unitId = GameState.getUnitIdByLocation(index[0], index[1]);
-        if (unitId) { //If unit is at location
+        
+        // HACK before the battlefield is created from the server info we shouldn't do this
+        if (!GameState.battlefield) return;
+        
+        var unit = GameState.battlefield.getUnitByLocation(index);
+        if (unit) { //If unit is at location
             //Check Owner
-            if (GameState.owners[unitId] != GameState.player) {
-                ui.setRightUnit(GameState.units[unitId], unitId);
+            if (GameState.owners[unit.ID] != GameState.player) {
+                ui.setRightUnit(unit);
                 //Context Menus Will Go Here
             } else {
                 ui.setRightUnit();
-                //ui.setRightUnit(GameState.units[unitId]);
+                //ui.setRightUnit(GameState.battlefield.units[unit.ID]);
                 //Context Menus Will Go Here
             }
         } else {

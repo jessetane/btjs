@@ -368,96 +368,34 @@ UI.prototype.update = function() {
     this.stageRight.draw();
 };
 
-UI.prototype.setLeftUnit = function(unit, unitId) {
-    //Get stats
+UI.prototype.generateHexLabel = function(unit) {
+    var label = {};
     if (unit) {
-        if (unit.scient) {
-            var name = "Name: " + unit.scient.name;
-            var hp = "HP: " + GameState.HPs[unitId];
-            var unitComp = "Comp: \n" + "E:" + unit.scient.comp.Earth + " " + "F:" + unit.scient.comp.Fire + " " + "I:" + unit.scient.comp.Ice + " " + "W:" + unit.scient.comp.Wind;
-            var weaponType = "";
-            if (unit.scient.weapon.bow) {
-                weaponType = "Bow";
-            }
-            if (unit.scient.weapon.glove) {
-                weaponType = "Glove";
-            }
-            if (unit.scient.weapon.wand) {
-                weaponType = "Wand";
-            }
-            if (unit.scient.weapon.sword) {
-                weaponType = "Sword";
-            }
-            var secondaryComp = "Weapon: " + weaponType + "\n" + "E:" + unit.scient.weapon_bonus.stone.comp.Earth + " " + "F:" + unit.scient.weapon_bonus.stone.comp.Fire + " " + "I:" + unit.scient.weapon_bonus.stone.comp.Ice + " " + "W:" + unit.scient.weapon_bonus.stone.comp.Wind;
-        }
-        unitId = GameState.getUnitIdByContents(unit);
-        if (GameState.owners[unitId] == "atkr") {
-            //UI.unitLeft.shape.setFill(colors_assignment[2]);
-        } else {
-            //UI.unitLeft.shape.setFill(colors_assignment[1]);
-        }
-    } else {
-        var name = "";
-        var hp = ""
-        var unitComp = "";
-        var secondaryComp = "";
-
-        //UI.unitLeft.shape.setFill(colors_assignment[0]);
+        label.name = "Name: " + unit.name;
+        label.hp = "HP: " + unit.hp;
+        label.unitComp = "Comp: \n" + "E:" + unit.comp.Earth + " " + "F:" + unit.comp.Fire + " " + "I:" + unit.comp.Ice + " " + "W:" + unit.comp.Wind;
+        label.secondaryComp = "Weapon: " + unit.weapon.wep_type + "\n" + "E:" + unit.weapon_bonus.stone.comp.Earth + " " + "F:" + unit.weapon_bonus.stone.comp.Fire + " " + "I:" + unit.weapon_bonus.stone.comp.Ice + " " + "W:" + unit.weapon_bonus.stone.comp.Wind;
     }
+    return label;
+}
 
-    this.unitLeft.text.name.setText(name);
-    this.unitLeft.text.hp.setText(hp);
-    this.unitLeft.text.unitComp.setText(unitComp);
-    this.unitLeft.text.secondaryComp.setText(secondaryComp);
+UI.prototype.setLeftUnit = function(unit) {
+    var label = this.generateHexLabel(unit);
+    this.unitLeft.text.name.setText(label.name);
+    this.unitLeft.text.hp.setText(label.hp);
+    this.unitLeft.text.unitComp.setText(label.unitComp);
+    this.unitLeft.text.secondaryComp.setText(label.secondaryComp);
     this.unitLeft.layer.draw();
-    //console.log(unit);
-};
+}
 
-UI.prototype.setRightUnit = function(unit, unitId) {
-    //Get stats
-    if (unit) {
-        if (unit.scient) {
-            var name = "Name: " + unit.scient.name;
-            var hp = "HP: " + GameState.HPs[unitId];
-            var unitComp = "Comp: \n" + "E:" + unit.scient.comp.Earth + " " + "F:" + unit.scient.comp.Fire + " " + "I:" + unit.scient.comp.Ice + " " + "W:" + unit.scient.comp.Wind;
-            var weaponType = "";
-            if (unit.scient.weapon.bow) {
-                weaponType = "Bow";
-            }
-            if (unit.scient.weapon.glove) {
-                weaponType = "Glove";
-            }
-            if (unit.scient.weapon.wand) {
-                weaponType = "Wand";
-            }
-            if (unit.scient.weapon.sword) {
-                weaponType = "Sword";
-            }
-            var secondaryComp = "Weapon: " + weaponType + "\n" + "E:" + unit.scient.weapon_bonus.stone.comp.Earth + " " + "F:" + unit.scient.weapon_bonus.stone.comp.Fire + " " + "I:" + unit.scient.weapon_bonus.stone.comp.Ice + " " + "W:" + unit.scient.weapon_bonus.stone.comp.Wind;
-        }
-        unitId = GameState.getUnitIdByContents(unit);
-        if (GameState.owners[unitId] == "atkr") {
-            this.unitRight.shape.setFill(colors_assignment[2]);
-        } else {
-            this.unitRight.shape.setFill(colors_assignment[1]);
-        }
-        //draw unitRight
-    } else {
-        var name = "";
-        var hp = ""
-        var unitComp = "";
-        var secondaryComp = "";
-
-        this.unitRight.shape.setFill(colors_assignment[0]);
-    }
-
-    this.unitRight.text.name.setText(name);
-    this.unitRight.text.hp.setText(hp);
-    this.unitRight.text.unitComp.setText(unitComp);
-    this.unitRight.text.secondaryComp.setText(secondaryComp);
+UI.prototype.setRightUnit = function(unit) {
+    var label = this.generateHexLabel(unit);
+    this.unitRight.text.name.setText(label.name);
+    this.unitRight.text.hp.setText(label.hp);
+    this.unitRight.text.unitComp.setText(label.unitComp);
+    this.unitRight.text.secondaryComp.setText(label.secondaryComp);
     this.unitRight.layer.draw();
-    //console.log(unit);
-};
+}
 
 UI.prototype.updateTimer = function() {
     if (GameState.start_time) {
