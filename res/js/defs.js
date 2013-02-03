@@ -68,6 +68,7 @@ function Scient(scient) {
     this.weapon_bonus = scient.weapon_bonus;
     this.location = scient.location;
     this.ID = scient.ID;
+    this.owner = scient.owner;
     this.sex = scient.sex;
     this.val = this.setVal();
     this.DOD = undefined;

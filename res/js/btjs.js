@@ -42,6 +42,7 @@ var GameState = {
                     // make 'grid' and 'units' scients homologous and attach their ID's
                     var scient = GameState.units[ID].scient;
                     scient.ID = ID;
+                    scient.owner = GameState.owners[ID];
                     var x = scient.location[0];
                     var y = scient.location[1];
                     GameState.grid.tiles[x][y].tile.contents.scient = scient;
