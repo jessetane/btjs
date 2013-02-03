@@ -221,8 +221,8 @@ function Battlefield(grid, init_locs, owners) {
         for (var unitID in HPs) {
             console.log("unitID: " + unitID + " HP: " + HPs[unitID]);
             var loc = this.locs[unitID];
-            this.grid.tiles[loc[0][loc[1]]].contents.hp = HPs[unitID];
-            this.HPs[unitID] = HPs[unitID]; //babysitting.
+            //this.grid.tiles[loc[0][loc[1]]].contents.hp = HPs[unitID];
+            //this.HPs[unitID] = HPs[unitID]; //babysitting.
         }
     }
     this.apply_queued = function() {}; //getting this right will be tricky.
