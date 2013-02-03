@@ -223,11 +223,8 @@ function Battlefield(grid, init_locs, owners) {
     };
     this.apply_HPs = function(HPs) {
         //Applies damage from last_state.
-        for (var unitID in HPs) {
-            console.log("unitID: " + unitID + " HP: " + HPs[unitID]);
-            var loc = this.locs[unitID];
-            //this.grid.tiles[loc[0][loc[1]]].contents.hp = HPs[unitID];
-            //this.HPs[unitID] = HPs[unitID]; //babysitting.
+        for (var ID in HPs) {
+          this.units[ID].hp = HPs[ID];
         }
     }
     this.apply_queued = function() {}; //getting this right will be tricky.

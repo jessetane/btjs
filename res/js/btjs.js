@@ -36,13 +36,9 @@ var GameState = {
                 GameState.units = state.units;
                 GameState.player_names = state.player_names;
                 GameState.whose_action = GameState.player_names[0];
-                GameState.HPs = [];
                 
                 for (var ID in GameState.units) {
-                    
-                    //TODO Calculate HPs
-                    GameState.HPs[ID] = 0;  
-                    
+                  
                     // make 'grid' and 'units' scients homologous and attach their ID's
                     var scient = GameState.units[ID].scient;
                     scient.ID = ID;
@@ -163,10 +159,7 @@ var GameState = {
                     // also when 'turn' advances (not ply)
                     
                     //NOTE: THIS IS WHAT ACTUALLY CHANGES THE GAME STATE.
-                    var HPs = state.HPs;
-                    GameState.HPs = HPs;
-                    console.log("applying damage from last_state.");
-                    GameState.battlefield.apply_HPs(HPs);
+                    GameState.battlefield.apply_HPs(state.HPs);
                     GameState.updateUnitLocations(state.locs);
                 } else {
                     console.log("GameState.update is false.");  // ??
