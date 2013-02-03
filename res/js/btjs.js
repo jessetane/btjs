@@ -178,16 +178,23 @@ var GameState = {
     
     updateUnitLocations: function(locs) {
         var change = false;
-        for (var l in locs) {
-            if (this.units[l].location != locs[l]) {
-                this.units[l].location = locs[l];
-                this.grid.tiles[this.units[l].location[0]][this.units[l].location[1]].tile.contents = null;
-                this.grid.tiles[locs[l][0]][locs[l][1]].tile.contents = this.units[l];
+        for (var ID in locs) {
+            var loc = locs[ID]
+            var scient = this.units[ID].scient;
+            if (!_.isEqual(scient.location, loc)) {
+                var oldX = scient.location[0];
+                var oldY = scient.location[1];
+                var newX = loc[0];
+                var newY = loc[1];
+                this.battlefield.grid.tiles[oldX][oldY].contents = null;
+                this.battlefield.grid.tiles[newX][newY].contents = scient;
+                scient.location = loc;
                 change = true;
             }
         }
 
-        this.locs = locs;
+        this.battlefield.locs = locs;
+        this.locs = locs;   // we should try to only have one reference to locs - is the right one in battlefield?
         return change;
     },
     
